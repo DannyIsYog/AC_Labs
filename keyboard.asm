@@ -5,22 +5,21 @@ PLACE       0
 inicio:
 ; inicializacoes gerais
 MOV R5, BUFFER      ; R5 com endereco de memoria BUFFER
-MOV R1, 1           ; linha a testar
 MOV R2, PINPOUT     ; R2 com o endereco do periferico
 MOV R6, 8           ; R8 com 8 para comparar com a linha atual durante a leitura
 
 ; corpo principal do programa
+reset: 
+    MOV R1, 1           ; linha a testar
 ciclo: 
     MOVB [R2], R1       ; escrever no porto de saida
     MOVB R3, [R2]       ; ler do porto de entrada
     AND R3, R3          ; afectar as flags (MOVs nao afectam as flags)
     JNZ guardar         ; uma tecla foi premida, logo temos de guardar o seu valor
     SHL R1, 1           ; avancar para a proxima linha
-    CMP R1, R6          ; se R1 ainca for menor ou igual a 8,
-    JLE ciclo           ; continuar o ciclo
-
-    MOV R1, 1           ; se R1 for maior que 8, voltar a linha 1
-    JMP ciclo           ; e recomecar o ciclo
+    CMP R1, R6          ; se R1 for maior que 8,
+    JGT reset           ; reiniciar o R1
+    JMP ciclo           ; ou recomecar o ciclo
     
     guardar: 
         MOV R4, R3      ; guardar coluna premida em registo 4
