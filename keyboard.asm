@@ -46,5 +46,4 @@ ciclo:
         MOVB R8, [R5]   ; ler o numero da linha para R8
         ADD R8, R7      ; n=4*L+C  L-linha  C-coluna
         MOVB [R5], R8   ; guardar na memoria o numero lido
-        MOV R1, 1       ; reiniciar a linha a ler
-        JMP ciclo       ; repetir ciclo de leitura do teclado
+        JMP reset       ; repetir ciclo de leitura do teclado
