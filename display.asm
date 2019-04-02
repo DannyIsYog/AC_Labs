@@ -1,7 +1,7 @@
 DISPLAY     EQU     8000H
 
-MOV R1, 0  ;linha
-MOV R2, 0  ;coluna
+MOV R1, 27  ;linha
+MOV R2, 21  ;coluna
 
 ; Assume R1 linha
 ; Assume R2 coluna
