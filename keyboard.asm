@@ -23,7 +23,7 @@ reset:
     MOV R1, 1           ; linha a testar
 ciclo: 
     MOVB [R9], R1       ; escrever no porto de saida
-    MOVB R2, [R10]       ; ler do porto de entrada
+    MOVB R2, [R10]      ; ler do porto de entrada
     AND R2, R2          ; afectar as flags (MOVs nao afectam as flags)
     JNZ guardar         ; uma tecla foi premida, logo temos de guardar o seu valor
     SHL R1, 1           ; avancar para a proxima linha

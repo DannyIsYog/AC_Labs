@@ -386,7 +386,7 @@ draw_pixel:
     MUL R2, R6      ; Multiplicar a linha por 4 (grupos por linha)
     ADD R0, R2      ; Somar ao endereco
 
-    MOV R4, 80H     ; Comecar por 1000 000
+    MOV R4, 80H     ; Comecar por 1000 0000
     draw_cont:      ; Contamos os SHR que conseguimos faer a R4 (linha%4)
         SUB R1, 1
         CMP R1, 0
