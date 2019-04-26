@@ -1,13 +1,25 @@
-DISPLAY     EQU     8000H
-KEYPININ    EQU     0E000H
-KEYPINOUT   EQU     0C000H
+;*******************************************************************************
+;* Projeto 1 de Arquitetura de Computadores, LETI                              *
+;* 93577 - Fabio Sousa                                                         *
+;* 93587 - Joao Pereira                                                        *
+;* 93608 - Pedro Godinho                                                       *
+;*                                                                             *
+;* Controlos:                                                                  *
+;* 0, 1, 2, 4, 6, 8, 9, A - Movimento do Submarino                             *
+;* F - Restart                                                                 *
+;*******************************************************************************
 
-; Stack começa a 1000H
+DISPLAY     EQU     8000H       ; Endereco do display
+KEYPININ    EQU     0E000H      ; Endereco de onde ler do keyboard
+KEYPINOUT   EQU     0C000H      ; Endereco de onde escrever para o keyboard
+
+
 PLACE 1000H
 stack:  TABLE 100H ; Stack vai ter 100H words
 
 SP_start:
 
+; Tabela do movimento ao qual cada tecla corresponde (2, 2 indica nao mover)
 movement:   STRING -1, -1   ; 0
             STRING 0, -1    ; 1
             STRING 1, -1    ; 2
@@ -20,6 +32,24 @@ movement:   STRING -1, -1   ; 0
             STRING 0, 1     ; 9
             STRING 1, 1     ; a
 
+; uma tabela dos numeros binarios 1000 0000 a 0000 0001 (one-hot)
+onehot_table:   WORD 80H
+                WORD 40H
+                WORD 20H
+                WORD 10H
+                WORD 8H
+                WORD 4H
+                WORD 2H
+                WORD 1H
+
+
+;*******************************************************************************
+;* Cada string que se pode desenhar no ecra comeca com o x e o y onde devem    *
+;* ser desenhadas, seguidos do seu tamanho em x e em y (para a rotina saber    *
+;* onde para a leitura), seguido dos 0s e 1s a desenhar em cada posicao.       *
+;*******************************************************************************
+
+; Ecra "Press any key" a mostrar no inicio do jogo
 start_screen:   STRING 0H, 0H
                 STRING 20H, 20H
                 STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -55,53 +85,49 @@ start_screen:   STRING 0H, 0H
                 STRING 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0
                 STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
-
-onehot_table:   WORD 80H
-                WORD 40H
-                WORD 20H
-                WORD 10H
-                WORD 8H
-                WORD 4H
-                WORD 2H
-                WORD 1H
-
-submarine:  STRING 0CH, 12H         ; Coordenadas onde desenhar
-            STRING 6, 3             ; Tamanho (x, y) da string
+; Desenho do submarino
+submarine:  STRING 0CH, 12H
+            STRING 6, 3
             STRING 0, 0, 1, 1, 0, 0
             STRING 0, 0, 0, 1, 0, 0
             STRING 1, 1, 1, 1, 1, 1
 
+; Retangulo de 0s do tamanho do submarino, mantido sincroniado com o submarino para o apagar sempre que necessario
 erase_submarine:    STRING 0CH, 12H
                     STRING 6, 3
                     STRING 0, 0, 0, 0, 0, 0
                     STRING 0, 0, 0, 0, 0, 0
                     STRING 0, 0, 0, 0, 0, 0
 
+
+; Ultima tecla lida
 last_key:   word -1
 
 ; Comecar o programa
-PLACE 0
-
-program_start: 
-    MOV SP, SP_start ; Iniciar o stack
+PLACE 0    
 
 restart:
+    MOV SP, SP_start ; (Re)iniciar o stack
+
+    ;Reiniciar a last_key para -1
     MOV R0, last_key
     MOV R1, -1
     MOV [R0], R1 
 
-
+    ; Reiniciar o sitio do submarino
     MOV R0, submarine
     MOV R1, erase_submarine
-    MOV R2, 0CH
-    MOVB [R0], R2
-    MOVB [R1], R2
-    MOV R2, 12H
-    ADD R0, 1
-    ADD R1, 1
+    MOV R2, 0CH     ; x para 0CH
     MOVB [R0], R2
     MOVB [R1], R2
 
+    MOV R2, 12H     ; y para 12H
+    ADD R0, 1       ; avancar o endereco para y
+    ADD R1, 1       ; avancar o endereco para y
+    MOVB [R0], R2
+    MOVB [R1], R2
+
+    ; Reiniciar os registos
     MOV R0, 0
     MOV R1, 0
     MOV R2, 0
@@ -113,30 +139,32 @@ restart:
     MOV R8, 0
     MOV R10, 0
 
+    ; Mostrar o ecra inicial
     MOV R0, start_screen
     CALL draw_string
-    MOV R0, last_key
+
+    MOV R0, last_key    ; R0 - endereco da last_key
 
     restart_wait:
         CALL get_key
-        MOV R1, [R0]
+        MOV R1, [R0]    ; ler a ultima tecla carregada
         CMP R1, -1
-        JEQ restart_wait
+        JEQ restart_wait    ; Se nenhuma tecla foi carregada, continuar a esperar
 
+; Comecar o jogo: 
+call clear_screen   ; Limpar o ecra
 
-call clear_screen
+; Desenho inicial de cada elemento no ecra
+MOV R0, submarine
+CALL draw_string
 
 main_loop:
-    MOV R0, submarine
-    CALL draw_string
-    ; ler input
-    CALL handle_input
-
-    JMP main_loop
+    CALL handle_input   ; ler input
+    JMP main_loop       ; recomecar o main_loop
 
 end: JMP end
 
-
+; Rotina que apaga tudo no ecra (da esquerda para a direita, para ser diferente)
 clear_screen:
     PUSH R0
     PUSH R1
@@ -158,11 +186,11 @@ clear_screen:
 
             CALL draw_pixel ; R1 e R2 ja tem as coordenadas a desenhar
 
-            ADD R2, 1
+            ADD R2, 1 ; fim do loop interno
             JMP clear_screen_for2
         clear_screen_for2_end:
 
-        ADD R1, 1
+        ADD R1, 1 ; fim do loop externo
         JMP clear_screen_for1
     clear_screen_for1_end:
 
@@ -179,17 +207,17 @@ handle_input:
     PUSH R0
     PUSH R1
 
-    CALL get_key                ; gravar tecla lida para R0
+    CALL get_key                ; gravar tecla lida para last_key
 
     MOV R1, last_key
-    MOV R0, [R1]
+    MOV R0, [R1]                ; valor de last_key para R0
 
     CMP R0, -1
     JEQ handle_input_no_input   ; nao foi dado input
 
     MOV R1, 0AH
     CMP R0, R1
-    JLE handle_input_movement   ; o input e uma das teclas de movimento
+    JLE handle_input_movement   ; o input e uma das teclas de movimento (menor que AH)
 
     MOV R1, 0EH
     CMP R0, R1
@@ -208,7 +236,8 @@ handle_input:
         JMP handle_input_end
 
     handle_input_stop:          ; TODO
-    handle_input_restart:
+        JMP handle_input_no_input
+    handle_input_restart:       ; reiniciar
         JMP restart
     
     handle_input_no_input:
@@ -245,7 +274,7 @@ handle_movement:
     ADD R4, R3              ; R4 - endereco do movimento a fazer
 
     MOVB R5, [R4]           ; R5 - movimento x a fazer
-    ADD R4, 1
+    ADD R4, 1               ; Avancar para o y na tabela de movimentos
     MOVB R6, [R4]           ; R6 - movimento y a fazer
 
     MOV R7, 0
@@ -259,37 +288,38 @@ handle_movement:
     ADD R8, R6              ; R8 - y final
     MOV R1, submarine
 
-    MOV R3, 00FFH
-    AND R7, R3
+    MOV R3, 00FFH           ; Mask para 8 bits
+    AND R7, R3              ; Aplicar a mask em R7 e R8
     AND R8, R3
 
-    MOV R3, 1BH
-    MOV R4, 1EH
+    MOV R3, 1BH             ; R3: 1BH (20H - tamanho em x do submarino)
+    MOV R4, 1EH             ; R4: 1EH (20H - tamanho em y do submarino)
 
-    CMP R5, 2
+    CMP R5, 2               ; Consideramos 2 no movimento como indicativo de movimento nulo
     JEQ handle_movement_end
 
-    AND R7, R7
+    ; Verificar se o movimento e valido
+    AND R7, R7              ; Se o x ficaria negativo (fora do ecra a esquerda)
     JN handle_movement_end
-    CMP R7, R3
+    CMP R7, R3              ; Se o x + tamanho do submarino ficaria acima de 20H (fora do ecra a direita)
     JGE handle_movement_end
-    AND R8, R8
+    AND R8, R8              ; Se o y ficaria negativo (fora do ecra para cima)
     JN handle_movement_end
-    CMP R8, R4
+    CMP R8, R4              ; Se o y + tamanho do submarino ficaria acima de 20H (fora do ecra para baixo)
     JGE handle_movement_end
 
-
+    ; Se o movimento e valido:
     MOV R0, erase_submarine
     CALL draw_string        ; apagar o submarino
 
-    MOVB [R1], R7
-    MOVB [R2], R7
+    MOVB [R1], R7           ; Fazer o movimento em x em submarine
+    MOVB [R2], R7           ; Fazer o movimento em x em erase_submarine
 
-    ADD R1, 1
-    ADD R2, 1
+    ADD R1, 1               ; Avancar para y
+    ADD R2, 1               ; Avancar para y
 
-    MOVB [R1], R8
-    MOVB [R2], R8
+    MOVB [R1], R8           ; Fazer o movimento em y em submarine
+    MOVB [R2], R8           ; Fazer o movimento em y em erase_submarine
 
     MOV R0, submarine
     CALL draw_string        ; Desenhar de novo o submarino
