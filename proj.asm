@@ -56,42 +56,14 @@ start_screen:   STRING 0H, 0H
                 STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 
-clear_screen:   STRING 0H, 0H
-                STRING 20H, 20H
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-
+onehot_table:   WORD 80H
+                WORD 40H
+                WORD 20H
+                WORD 10H
+                WORD 8H
+                WORD 4H
+                WORD 2H
+                WORD 1H
 
 submarine:  STRING 0CH, 12H         ; Coordenadas onde desenhar
             STRING 6, 3             ; Tamanho (x, y) da string
@@ -151,8 +123,8 @@ restart:
         CMP R1, -1
         JEQ restart_wait
 
-MOV R0, clear_screen
-call draw_string
+
+call clear_screen
 
 main_loop:
     MOV R0, submarine
@@ -163,6 +135,43 @@ main_loop:
     JMP main_loop
 
 end: JMP end
+
+
+clear_screen:
+    PUSH R0
+    PUSH R1
+    PUSH R2
+    PUSH R3
+
+    MOV R3, 0 ; Queremos sempre desenhar um 0
+    MOV R0, 20H ; R0: 20H, para comparacoes
+
+    MOV R1, 0 ; R1: x
+    clear_screen_for1: ;for (x = 0; x < 20H, x++) {
+        CMP R1, R0
+        JGE clear_screen_for1_end
+
+        MOV R2, 0 ; R2: y
+        clear_screen_for2: ;   for (y = 0; y < 20H, y++) {
+            CMP R2, R0
+            JGE clear_screen_for2_end
+
+            CALL draw_pixel ; R1 e R2 ja tem as coordenadas a desenhar
+
+            ADD R2, 1
+            JMP clear_screen_for2
+        clear_screen_for2_end:
+
+        ADD R1, 1
+        JMP clear_screen_for1
+    clear_screen_for1_end:
+
+    clear_screen_end:
+        POP R3
+        POP R2
+        POP R1
+        POP R0
+        RET
 
 
 ; Funcao que gere o input do programa.
@@ -386,13 +395,13 @@ draw_pixel:
     MUL R2, R6      ; Multiplicar a linha por 4 (grupos por linha)
     ADD R0, R2      ; Somar ao endereco
 
-    MOV R4, 80H     ; Comecar por 1000 0000
-    draw_cont:      ; Contamos os SHR que conseguimos faer a R4 (linha%4)
-        SUB R1, 1
-        CMP R1, 0
-        JLT draw_draw
-        SHR R4, 1
-        JMP draw_cont
+    ; Obter o bit a desenhar (por exemplo, 0010 0000  para desenhar o terceiro pixel de um grupo)
+    MOV R4, onehot_table    ; Endereco da lista de onehots
+    MOV R6, 2               ; Para a multiplicacao
+    MUL R1, R6              ; Multiplicar o x por 2, para ver o indice na lista
+    ADD R4, R1              ; Adicionar o indice na lista ao endereco na lista
+    MOV R4, [R4]            ; E ler para R4
+
     draw_draw:
         MOVB R5, [R0]   ; Ler o que ja estava no display nesse grupo de pixeis
         AND R3, R3      ; Atualizar bits de estado para R3
@@ -447,7 +456,7 @@ get_key:
             ADD R5, 1
             SHR R4, 1
             JNZ get_key_count1
-        SUB R5, 1
+        SUB R5, 1 ; numero de vezes que podemos fazer SHL a R4
 
         MOV R0, R5 ; guardar no return (R0)
 
@@ -456,14 +465,14 @@ get_key:
             ADD R5, 1
             SHR R3, 1
             JNZ get_key_count2
-        SUB R5, 1
+        SUB R5, 1 ; numero de vezes que podemos fazer SHL a R3
 
-        MOV R1, 4 ; reutilizar um registo ja nao usado para a multiplicacao
-        MUL R5, R1
+        MOV R1, 4           ; reutilizar um registo ja nao usado para a multiplicacao
+        MUL R5, R1          ; linha*4+coluna
         ADD R0, R5
         JMP get_key_end
     
-    get_key_return_null:
+    get_key_return_null:    ; nenhuma tecla carregada, return -1
         MOV R0, -1
     get_key_end:
         MOV R1, last_key
