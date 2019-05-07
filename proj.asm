@@ -159,9 +159,37 @@ MOV R0, submarine
 CALL draw_string
 
 main_loop:
-    CALL handle_input   ; ler input
-    JMP main_loop       ; recomecar o main_loop
+    CALL get_key                ; gravar tecla lida para last_key
 
+    MOV R1, last_key
+    MOV R0, [R1]                ; valor de last_key para R0
+
+    CMP R0, -1
+    JEQ main_loop   ; nao foi dado input
+
+    MOV R1, 0AH
+    CMP R0, R1
+    JLE main_movement   ; o input e uma das teclas de movimento (menor que AH)
+
+    MOV R1, 0EH
+    CMP R0, R1
+    JEQ main_stop       ; o input e a tecla de stop (e)
+
+    MOV R1, 0FH
+    CMP R0, R1
+    JEQ restart         ; o input e a tecla de restart (f)
+
+
+    JMP main_loop
+
+
+    main_movement:      ; fazer o movimento em R0 e acabar
+        CALL handle_movement
+        JMP main_loop
+
+    main_stop:          ; TODO
+        JMP main_loop
+    
 end: JMP end
 
 ; Rotina que apaga tudo no ecra (da esquerda para a direita, para ser diferente)
@@ -207,40 +235,6 @@ handle_input:
     PUSH R0
     PUSH R1
 
-    CALL get_key                ; gravar tecla lida para last_key
-
-    MOV R1, last_key
-    MOV R0, [R1]                ; valor de last_key para R0
-
-    CMP R0, -1
-    JEQ handle_input_no_input   ; nao foi dado input
-
-    MOV R1, 0AH
-    CMP R0, R1
-    JLE handle_input_movement   ; o input e uma das teclas de movimento (menor que AH)
-
-    MOV R1, 0EH
-    CMP R0, R1
-    JEQ handle_input_stop       ; o input e a tecla de stop (e)
-
-    MOV R1, 0FH
-    CMP R0, R1
-    JEQ handle_input_restart    ; o input e a tecla de restart (f)
-
-
-    JMP handle_input_end
-
-
-    handle_input_movement:      ; fazer o movimento em R0 e acabar
-        CALL handle_movement
-        JMP handle_input_end
-
-    handle_input_stop:          ; TODO
-        JMP handle_input_no_input
-    handle_input_restart:       ; reiniciar
-        JMP restart
-    
-    handle_input_no_input:
 
     handle_input_end:
         POP R1
