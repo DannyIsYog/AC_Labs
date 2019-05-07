@@ -179,9 +179,7 @@ main_loop:
     CMP R0, R1
     JEQ restart         ; o input e a tecla de restart (f)
 
-
     JMP main_loop
-
 
     main_movement:      ; fazer o movimento em R0 e acabar
         CALL handle_movement
