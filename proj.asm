@@ -19,6 +19,7 @@ stack:  TABLE 100H ; Stack vai ter 100H words
 
 SP_start:
 
+
 ; Tabela do movimento ao qual cada tecla corresponde (2, 2 indica nao mover)
 movement:   STRING -1, -1   ; 0
             STRING 0, -1    ; 1
@@ -88,44 +89,62 @@ start_screen:   STRING 0H, 0H
 ; Desenho do submarino
 submarine:  STRING 0CH, 12H
             STRING 6, 3
-            STRING 0, 0, 1, 1, 0, 0
-            STRING 0, 0, 0, 1, 0, 0
+            STRING 2, 2, 1, 1, 2, 2
+            STRING 2, 2, 2, 1, 2, 2
             STRING 1, 1, 1, 1, 1, 1
 
 ; Retangulo de 0s do tamanho do submarino, mantido sincroniado com o submarino para o apagar sempre que necessario
 erase_submarine:    STRING 0CH, 12H
                     STRING 6, 3
-                    STRING 0, 0, 0, 0, 0, 0
-                    STRING 0, 0, 0, 0, 0, 0
+                    STRING 2, 2, 0, 0, 2, 2
+                    STRING 2, 2, 2, 0, 2, 2
                     STRING 0, 0, 0, 0, 0, 0
 
+torpedo:    STRING 0H, 0H 
+            STRING 1, 3
+            STRING 1
+            STRING 1
+            STRING 1
+
+erase_torpedo:  STRING 0H, 0H 
+                STRING 1, 3
+                STRING 2
+                STRING 0
+                STRING 0
 
 ; Ultima tecla lida
 last_key:   word -1
 
+exception_table: word clock_exception
+
+; Estados
+submarine_state: word 0
+torpedo_state: word 0
+torpedo_clock: word 0
+
+
 ; Comecar o programa
 PLACE 0    
 
+MOV BTE, exception_table
+EI0
+EI
+
 restart:
     MOV SP, SP_start ; (Re)iniciar o stack
+
+    MOV R0, submarine_state
+    MOV R1, 0
+    MOV [R0], R1
+
+    MOV R0, torpedo_state
+    MOV R1, 0
+    MOV [R0], R1
 
     ;Reiniciar a last_key para -1
     MOV R0, last_key
     MOV R1, -1
     MOV [R0], R1 
-
-    ; Reiniciar o sitio do submarino
-    MOV R0, submarine
-    MOV R1, erase_submarine
-    MOV R2, 0CH     ; x para 0CH
-    MOVB [R0], R2
-    MOVB [R1], R2
-
-    MOV R2, 12H     ; y para 12H
-    ADD R0, 1       ; avancar o endereco para y
-    ADD R1, 1       ; avancar o endereco para y
-    MOVB [R0], R2
-    MOVB [R1], R2
 
     ; Reiniciar os registos
     MOV R0, 0
@@ -154,11 +173,10 @@ restart:
 ; Comecar o jogo: 
 call clear_screen   ; Limpar o ecra
 
-; Desenho inicial de cada elemento no ecra
-MOV R0, submarine
-CALL draw_string
-
 main_loop:
+    CALL submarine_handler
+    CALL torpedo_handler
+
     CALL get_key                ; gravar tecla lida para last_key
 
     MOV R1, last_key
@@ -167,28 +185,41 @@ main_loop:
     CMP R0, -1
     JEQ main_loop   ; nao foi dado input
 
+    ; Submarine
     MOV R1, 0AH
     CMP R0, R1
-    JLE main_movement   ; o input e uma das teclas de movimento (menor que AH)
+    JGT main_no_movement
+    MOV R2, submarine_state
+    MOV R3, 2
+    MOV [R2], R3
+    main_no_movement:
 
-    MOV R1, 0EH
+    ; Torpedo
+    MOV R1, 5
     CMP R0, R1
-    JEQ main_stop       ; o input e a tecla de stop (e)
+    JNZ main_no_shooting
+
+    MOV R2, torpedo_state
+    MOV R3, [R2]
+    CMP R3, 1
+    JNZ main_no_shooting
+
+    MOV R3, 2
+    MOV [R2], R3
+    main_no_shooting:
+
+    ;MOV R1, 0EH
+    ;CMP R0, R1
+    ;JEQ main_stop       ; o input e a tecla de stop (e)
 
     MOV R1, 0FH
     CMP R0, R1
     JEQ restart         ; o input e a tecla de restart (f)
 
     JMP main_loop
-
-    main_movement:      ; fazer o movimento em R0 e acabar
-        CALL handle_movement
-        JMP main_loop
-
-    main_stop:          ; TODO
-        JMP main_loop
     
 end: JMP end
+
 
 ; Rotina que apaga tudo no ecra (da esquerda para a direita, para ser diferente)
 clear_screen:
@@ -228,102 +259,268 @@ clear_screen:
         RET
 
 
-; Funcao que gere o input do programa.
-handle_input:
+clock_exception:
+    PUSH R0
+    PUSH R1
+    MOV R0, torpedo_clock
+    MOV R1, 1
+    MOV [R0], R1
+    POP R1
+    POP R0
+    RFE
+
+
+submarine_handler:
     PUSH R0
     PUSH R1
 
+    MOV R1, submarine_state
+    MOV R0, [R1]
+    CMP R0, 0
+    JEQ submarine_handler_0
+    CMP R0, 1
+    JEQ submarine_handler_1
+    CMP R0, 2
+    JEQ submarine_handler_2
 
-    handle_input_end:
+    POP R1 
+    POP R0 
+    RET
+
+    submarine_handler_0:   ; Estado 0: inicializar as variaveis
+        ; Reiniciar o sitio do submarino
+        PUSH R2
+        PUSH R3
+        MOV R1, submarine
+        MOV R2, erase_submarine
+        MOV R3, 0CH     ; x para 0CH
+        MOVB [R1], R3
+        MOVB [R2], R3
+
+        MOV R3, 12H     ; y para 12H
+        ADD R1, 1       ; avancar o endereco para y
+        ADD R2, 1       ; avancar o endereco para y
+        MOVB [R1], R3
+        MOVB [R2], R3
+
+        MOV R0, submarine
+        CALL draw_string
+
+        MOV R0, submarine_state
+        MOV R1, 1
+        MOV [R0], R1
+        POP R3
+        POP R2
         POP R1
         POP R0
         RET
 
+    submarine_handler_1:
+        POP R1 
+        POP R0 
+        RET 
 
-; Funcao que move o submarino e o desenha no fim
-; Args: R0 - Tecla
-handle_movement:
+    submarine_handler_2:
+        PUSH R2
+        PUSH R3
+        PUSH R4
+        PUSH R5
+        PUSH R6
+        PUSH R7
+        PUSH R8
+        PUSH R9
+
+        MOV R1, submarine       ; R1 - endereco do submarino
+        MOV R2, erase_submarine ; R2 - endereco do erase_submarine
+
+        MOV R4, last_key
+        MOV R3, [R4]            ; R3 - last_key
+        MOV R4, 2
+        MUL R3, R4              ; R3 - last_key * 2
+
+        MOV R4, movement        ; R4 - endereco da tabela de movimentos
+        ADD R4, R3              ; R4 - endereco do movimento a fazer
+
+        MOVB R5, [R4]           ; R5 - movimento x a fazer
+        ADD R4, 1               ; Avancar para o y na tabela de movimentos
+        MOVB R6, [R4]           ; R6 - movimento y a fazer
+
+        MOV R7, 0
+        MOV R8, 0
+
+        MOVB R7, [R1]
+        ADD R7, R5              ; R7 - x final
+        
+        ADD R1, 1
+        MOVB R8, [R1]
+        ADD R8, R6              ; R8 - y final
+        MOV R1, submarine
+
+        MOV R3, 00FFH           ; Mask para 8 bits
+        AND R7, R3              ; Aplicar a mask em R7 e R8
+        AND R8, R3
+
+        MOV R3, 1BH             ; R3: 1BH (20H - tamanho em x do submarino)
+        MOV R4, 1EH             ; R4: 1EH (20H - tamanho em y do submarino)
+
+        CMP R5, 2               ; Consideramos 2 no movimento como indicativo de movimento nulo
+        JEQ submarine_handler_end
+
+        ; Verificar se o movimento e valido
+        AND R7, R7              ; Se o x ficaria negativo (fora do ecra a esquerda)
+        JN submarine_handler_end
+        CMP R7, R3              ; Se o x + tamanho do submarino ficaria acima de 20H (fora do ecra a direita)
+        JGE submarine_handler_end
+        AND R8, R8              ; Se o y ficaria negativo (fora do ecra para cima)
+        JN submarine_handler_end
+        CMP R8, R4              ; Se o y + tamanho do submarino ficaria acima de 20H (fora do ecra para baixo)
+        JGE submarine_handler_end
+
+        ; Se o movimento e valido:
+        MOV R0, erase_submarine
+        CALL draw_string        ; apagar o submarino
+
+        MOVB [R1], R7           ; Fazer o movimento em x em submarine
+        MOVB [R2], R7           ; Fazer o movimento em x em erase_submarine
+
+        ADD R1, 1               ; Avancar para y
+        ADD R2, 1               ; Avancar para y
+
+        MOVB [R1], R8           ; Fazer o movimento em y em submarine
+        MOVB [R2], R8           ; Fazer o movimento em y em erase_submarine
+
+        MOV R0, submarine
+        CALL draw_string        ; Desenhar de novo o submarino
+
+        MOV R0, submarine_state
+        MOV R1, 1
+        MOV [R0], R1
+
+        submarine_handler_end:
+            POP R9
+            POP R8
+            POP R7
+            POP R6
+            POP R5
+            POP R4
+            POP R3
+            POP R2
+            POP R1
+            POP R0
+            RET
+
+
+torpedo_handler:
     PUSH R0
     PUSH R1
-    PUSH R2
-    PUSH R3
-    PUSH R4
-    PUSH R5
-    PUSH R6
-    PUSH R7
-    PUSH R8
-    PUSH R9
 
-    MOV R1, submarine       ; R1 - endereco do submarino
-    MOV R2, erase_submarine ; R2 - endereco do erase_submarine
+    MOV R1, torpedo_state
+    MOV R0, [R1]
+    CMP R0, 0
+    JEQ torpedo_handler_0
+    CMP R0, 1
+    JEQ torpedo_handler_1
+    CMP R0, 2
+    JEQ torpedo_handler_2
+    CMP R0, 3
+    JEQ torpedo_handler_3
 
-    MOV R4, last_key
-    MOV R3, [R4]            ; R3 - last_key
-    MOV R4, 2
-    MUL R3, R4              ; R3 - last_key * 2
+    POP R1 
+    POP R0 
+    RET
 
-    MOV R4, movement        ; R4 - endereco da tabela de movimentos
-    ADD R4, R3              ; R4 - endereco do movimento a fazer
+    torpedo_handler_0:
+        PUSH R3 
+        PUSH R2 
+        MOV R1, torpedo
+        MOV R2, erase_torpedo
+        MOV R3, 0 
+        MOVB [R1], R3
+        MOVB [R3], R3
 
-    MOVB R5, [R4]           ; R5 - movimento x a fazer
-    ADD R4, 1               ; Avancar para o y na tabela de movimentos
-    MOVB R6, [R4]           ; R6 - movimento y a fazer
+        MOV R3, 0H
+        ADD R1, 1
+        ADD R2, 1
+        MOVB [R1], R3
+        MOVB [R2], R3
 
-    MOV R7, 0
-    MOV R8, 0
+        MOV R1, torpedo_state
+        MOV R0, 1
+        MOV [R1], R0
 
-    MOVB R7, [R1]
-    ADD R7, R5              ; R7 - x final
-    
-    ADD R1, 1
-    MOVB R8, [R1]
-    ADD R8, R6              ; R8 - y final
-    MOV R1, submarine
-
-    MOV R3, 00FFH           ; Mask para 8 bits
-    AND R7, R3              ; Aplicar a mask em R7 e R8
-    AND R8, R3
-
-    MOV R3, 1BH             ; R3: 1BH (20H - tamanho em x do submarino)
-    MOV R4, 1EH             ; R4: 1EH (20H - tamanho em y do submarino)
-
-    CMP R5, 2               ; Consideramos 2 no movimento como indicativo de movimento nulo
-    JEQ handle_movement_end
-
-    ; Verificar se o movimento e valido
-    AND R7, R7              ; Se o x ficaria negativo (fora do ecra a esquerda)
-    JN handle_movement_end
-    CMP R7, R3              ; Se o x + tamanho do submarino ficaria acima de 20H (fora do ecra a direita)
-    JGE handle_movement_end
-    AND R8, R8              ; Se o y ficaria negativo (fora do ecra para cima)
-    JN handle_movement_end
-    CMP R8, R4              ; Se o y + tamanho do submarino ficaria acima de 20H (fora do ecra para baixo)
-    JGE handle_movement_end
-
-    ; Se o movimento e valido:
-    MOV R0, erase_submarine
-    CALL draw_string        ; apagar o submarino
-
-    MOVB [R1], R7           ; Fazer o movimento em x em submarine
-    MOVB [R2], R7           ; Fazer o movimento em x em erase_submarine
-
-    ADD R1, 1               ; Avancar para y
-    ADD R2, 1               ; Avancar para y
-
-    MOVB [R1], R8           ; Fazer o movimento em y em submarine
-    MOVB [R2], R8           ; Fazer o movimento em y em erase_submarine
-
-    MOV R0, submarine
-    CALL draw_string        ; Desenhar de novo o submarino
-
-    handle_movement_end:
-        POP R9
-        POP R8
-        POP R7
-        POP R6
-        POP R5
-        POP R4
         POP R3
+        POP R2 
+        POP R1 
+        POP R0
+        RET
+
+    torpedo_handler_1:
+        POP R1 
+        POP R0 
+        RET
+
+    torpedo_handler_2:
+        PUSH R2
+        PUSH R3
+
+        MOV R0, submarine
+        MOVB R1, [R0]
+        ADD R0, 1
+        MOVB R2, [R0]
+        ADD R1, 5
+        SUB R2, 1
+        MOV R0, torpedo
+        MOV R3, erase_torpedo
+        
+        MOVB [R0], R1
+        MOVB [R3], R1
+        ADD R0, 1
+        ADD R3, 1
+        MOVB [R0], R2
+        MOVB [R3], R2
+        SUB R0, 1
+        CALL draw_string
+
+        MOV R1, 3
+        MOV R0, torpedo_state
+        MOV [R0], R1
+
+        POP R3
+        POP R2
+        POP R1
+        POP R0
+        RET
+
+    torpedo_handler_3:
+        PUSH R2
+        MOV R0, torpedo_clock
+        MOV R1, [R0]
+        CMP R1, 1
+        JNE torpedo_handler_end
+        
+        MOV R0, erase_torpedo
+        CALL draw_string
+
+        MOV R0, torpedo
+        MOV R1, erase_torpedo
+
+        ADD R0, 1
+        ADD R1, 1
+        MOVB R2, [R0]
+        SUB R2, 2
+
+        MOVB [R0], R2
+        MOVB [R1], R2
+
+        SUB R0, 1
+
+        CALL draw_string
+
+        MOV R0, torpedo_clock
+        MOV R1, 0
+        MOV [R0], R1
+
+        torpedo_handler_end:
         POP R2
         POP R1
         POP R0
@@ -396,7 +593,7 @@ draw_string:
 ; Funcao que desenha um determinado pixel no ecra
 ; Args: R1 - x
 ;       R2 - y
-;       R3 - 1 ou 0 (escrever ou apagar)
+;       R3 - 2, 1 ou 0 (ignorar, escrever ou apagar)
 draw_pixel:
     PUSH R0
     PUSH R1
@@ -405,6 +602,9 @@ draw_pixel:
     PUSH R4
     PUSH R5
     PUSH R6
+
+    CMP R3, 2
+    JEQ draw_end
 
     MOV R0, DISPLAY ; Endereco base
     MOV R6, 8       ; Usado para operacoes
@@ -457,14 +657,17 @@ get_key:
     PUSH R4
     PUSH R5
     PUSH R6
+    PUSH R7
 
     MOV R1, KEYPININ    ; R1: endereco in do periferico
     MOV R2, KEYPINOUT   ; R2: endereco out do periferico
     MOV R3, 1           ; R3: linha atual
     MOV R6, 8           ; R6: constante para comparar
+    MOV R7, 0FH
     get_key_cicle:
         MOVB [R2], R3       ; Escrever a linha no out
         MOVB R4, [R1]       ; R4: Coluna (ler a coluna do in)
+        AND R4, R7
         AND R4, R4          ; Atualizar bits de estado
         JNZ get_key_save    ; Guardar a tecla encontrada
         SHL R3, 1
@@ -499,6 +702,7 @@ get_key:
     get_key_end:
         MOV R1, last_key
         MOV [R1], R0
+        POP R7
         POP R6
         POP R5
         POP R4
