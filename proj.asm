@@ -108,14 +108,15 @@ torpedo:    STRING 0H, 0H
 
 erase_torpedo:  STRING 0H, 0H 
                 STRING 1, 3
-                STRING 2
+                STRING 0
                 STRING 0
                 STRING 0
 
 ; Ultima tecla lida
 last_key:   word -1
 
-exception_table: word clock_exception
+exception_table: word clock_0_exception
+                 word clock_1_exception
 
 ; Estados
 submarine_state: word 0
@@ -127,6 +128,7 @@ torpedo_clock: word 0
 PLACE 0    
 
 MOV BTE, exception_table
+EI1
 EI0
 EI
 
@@ -259,7 +261,14 @@ clear_screen:
         RET
 
 
-clock_exception:
+clock_0_exception:
+    PUSH R0
+    PUSH R1
+    POP R1
+    POP R0
+    RFE
+
+clock_1_exception:
     PUSH R0
     PUSH R1
     MOV R0, torpedo_clock
@@ -362,6 +371,7 @@ submarine_handler:
 
         MOV R3, 1BH             ; R3: 1BH (20H - tamanho em x do submarino)
         MOV R4, 1EH             ; R4: 1EH (20H - tamanho em y do submarino)
+        MOV R6, 0BH             ; R6: Limite de cima do ecra (10H)
 
         CMP R5, 2               ; Consideramos 2 no movimento como indicativo de movimento nulo
         JEQ submarine_handler_end
@@ -371,8 +381,8 @@ submarine_handler:
         JN submarine_handler_end
         CMP R7, R3              ; Se o x + tamanho do submarino ficaria acima de 20H (fora do ecra a direita)
         JGE submarine_handler_end
-        AND R8, R8              ; Se o y ficaria negativo (fora do ecra para cima)
-        JN submarine_handler_end
+        CMP R8, R6              ; Se o y ficaria acima do limite de cima
+        JLT submarine_handler_end
         CMP R8, R4              ; Se o y + tamanho do submarino ficaria acima de 20H (fora do ecra para baixo)
         JGE submarine_handler_end
 
@@ -496,7 +506,7 @@ torpedo_handler:
         MOV R0, torpedo_clock
         MOV R1, [R0]
         CMP R1, 1
-        JNE torpedo_handler_end
+        JNE torpedo_handler_3_end
         
         MOV R0, erase_torpedo
         CALL draw_string
@@ -507,7 +517,10 @@ torpedo_handler:
         ADD R0, 1
         ADD R1, 1
         MOVB R2, [R0]
-        SUB R2, 2
+        SUB R2, 1
+
+        CMP R2, 0
+        JLT torpedo_handler_3_destroy_torpedo
 
         MOVB [R0], R2
         MOVB [R1], R2
@@ -520,7 +533,14 @@ torpedo_handler:
         MOV R1, 0
         MOV [R0], R1
 
-        torpedo_handler_end:
+        JMP torpedo_handler_3_end
+
+        torpedo_handler_3_destroy_torpedo:
+        MOV R0, torpedo_state
+        MOV R1, 1
+        MOV [R0], R1
+
+        torpedo_handler_3_end:
         POP R2
         POP R1
         POP R0
