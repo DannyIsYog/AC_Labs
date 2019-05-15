@@ -12,6 +12,8 @@
 DISPLAY     EQU     8000H       ; Endereco do display
 KEYPININ    EQU     0E000H      ; Endereco de onde ler do keyboard
 KEYPINOUT   EQU     0C000H      ; Endereco de onde escrever para o keyboard
+HEX_DISPLAY1 EQU   0A000H      ; Display hexadecimal 1
+HEX_DISPLAY2 EQU   06000H      ; Display hexadecimal 2
 
 
 PLACE 1000H
@@ -112,6 +114,14 @@ erase_torpedo:  STRING 0H, 0H
                 STRING 0
                 STRING 0
 
+bullet: STRING 0H, 0H
+        STRING 1, 1
+        STRING 1
+
+erase_bullet: STRING 0H, 0H
+              STRING 1, 1
+              STRING 0
+
 ; Ultima tecla lida
 last_key:   word -1
 
@@ -121,7 +131,10 @@ exception_table: word clock_0_exception
 ; Estados
 submarine_state: word 0
 torpedo_state: word 0
+bullet_state: word 0
+
 torpedo_clock: word 0
+bullet_clock: word 0
 
 
 ; Comecar o programa
@@ -140,6 +153,10 @@ restart:
     MOV [R0], R1
 
     MOV R0, torpedo_state
+    MOV R1, 0
+    MOV [R0], R1
+
+    MOV R0, bullet_state
     MOV R1, 0
     MOV [R0], R1
 
@@ -178,6 +195,7 @@ call clear_screen   ; Limpar o ecra
 main_loop:
     CALL submarine_handler
     CALL torpedo_handler
+    CALL bullet_handler
 
     CALL get_key                ; gravar tecla lida para last_key
 
@@ -210,9 +228,9 @@ main_loop:
     MOV [R2], R3
     main_no_shooting:
 
-    ;MOV R1, 0EH
-    ;CMP R0, R1
-    ;JEQ main_stop       ; o input e a tecla de stop (e)
+    MOV R1, 0EH
+    CMP R0, R1
+    JEQ stop            ; o input e a tecla de stop (e)
 
     MOV R1, 0FH
     CMP R0, R1
@@ -221,6 +239,32 @@ main_loop:
     JMP main_loop
     
 end: JMP end
+
+
+clock_0_exception:
+    PUSH R0
+    PUSH R1
+    POP R1
+    POP R0
+    RFE
+
+
+clock_1_exception:
+    PUSH R0
+    PUSH R1
+    MOV R1, 1
+
+    MOV R0, torpedo_clock
+    MOV [R0], R1
+    MOV R0, bullet_clock
+    MOV [R0], R1
+    POP R1
+    POP R0
+    RFE
+
+
+stop:
+    JMP stop
 
 
 ; Rotina que apaga tudo no ecra (da esquerda para a direita, para ser diferente)
@@ -261,22 +305,11 @@ clear_screen:
         RET
 
 
-clock_0_exception:
-    PUSH R0
+random_num_gen:
     PUSH R1
+    MOV R1, HEX_DISPLAY2;
+    MOV R0, [R1]
     POP R1
-    POP R0
-    RFE
-
-clock_1_exception:
-    PUSH R0
-    PUSH R1
-    MOV R0, torpedo_clock
-    MOV R1, 1
-    MOV [R0], R1
-    POP R1
-    POP R0
-    RFE
 
 
 submarine_handler:
@@ -440,8 +473,8 @@ torpedo_handler:
     RET
 
     torpedo_handler_0:
-        PUSH R3 
-        PUSH R2 
+        PUSH R2
+        PUSH R3
         MOV R1, torpedo
         MOV R2, erase_torpedo
         MOV R3, 0 
@@ -545,6 +578,99 @@ torpedo_handler:
         POP R1
         POP R0
         RET
+
+
+bullet_handler:
+    PUSH R0
+    PUSH R1
+
+    MOV R1, bullet_state
+    MOV R0, [R1]
+    CMP R0, 0
+    JEQ bullet_handler_0
+    CMP R0, 1
+    JEQ bullet_handler_1
+
+    POP R1
+    POP R0
+    RET
+
+    bullet_handler_0:
+        PUSH R2
+        PUSH R3
+        PUSH R4
+        MOV R1, bullet
+        MOV R2, erase_bullet
+        MOV R3, 0H
+        MOVB [R1], R3
+        MOVB [R3], R3
+
+        MOV R4, submarine
+        ADD R4, 1
+        MOVB R3, [R4]
+        ADD R3, 1
+        ADD R1, 1
+        ADD R2, 1
+        MOVB [R1], R3
+        MOVB [R2], R3
+
+        MOV R1, bullet_state
+        MOV R0, 1
+        MOV [R1], R0
+
+        POP R4
+        POP R3
+        POP R2 
+        POP R1 
+        POP R0
+        RET
+
+
+    bullet_handler_1:
+        PUSH R2
+        PUSH R3
+        MOV R0, bullet_clock
+        MOV R1, [R0]
+        CMP R1, 1
+        JNE bullet_handler_1_end
+        
+        MOV R0, erase_bullet
+        CALL draw_string
+
+        MOV R0, bullet
+        MOV R1, erase_bullet
+
+        MOVB R2, [R0]
+        ADD R2, 1
+
+        MOV R3, 20H
+        CMP R2, R3
+        JGE bullet_handler_1_destroy_bullet
+
+        MOVB [R0], R2
+        MOVB [R1], R2
+
+        CALL draw_string
+
+        MOV R0, bullet_clock
+        MOV R1, 0
+        MOV [R0], R1
+
+        JMP bullet_handler_1_end
+
+        bullet_handler_1_destroy_bullet:
+        MOV R0, bullet_state
+        MOV R1, 0
+        MOV [R0], R1
+
+        bullet_handler_1_end:
+        POP R3
+        POP R2
+        POP R1
+        POP R0
+        RET
+
+
 
 
 ; Funcao que desenha uma string no ecra
