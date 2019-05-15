@@ -16,7 +16,7 @@ HEX_DISPLAY1 EQU   0A000H      ; Display hexadecimal 1
 HEX_DISPLAY2 EQU   06000H      ; Display hexadecimal 2
 
 
-PLACE 1000H
+PLACE 2000H
 stack:  TABLE 100H ; Stack vai ter 100H words
 
 SP_start:
@@ -88,6 +88,42 @@ start_screen:   STRING 0H, 0H
                 STRING 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0
                 STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
+end_screen:     STRING 0H, 0H
+                STRING 20H, 20H
+                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                STRING 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0
+                STRING 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0
+                STRING 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0
+                STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+
 ; Desenho do submarino
 submarine:  STRING 0CH, 12H
             STRING 6, 3
@@ -101,6 +137,40 @@ erase_submarine:    STRING 0CH, 12H
                     STRING 2, 2, 0, 0, 2, 2
                     STRING 2, 2, 2, 0, 2, 2
                     STRING 0, 0, 0, 0, 0, 0
+
+boat1:  STRING 0H, 0H
+        STRING 8H, 6H
+        STRING 2, 1, 2, 2, 2, 2, 2, 2
+        STRING 2, 2, 1, 2, 2, 2, 2, 2
+        STRING 2, 2, 1, 2, 2, 2, 2, 2
+        STRING 1, 1, 1, 1, 1, 1, 1, 1
+        STRING 2, 1, 1, 1, 1, 1, 1, 2
+        STRING 2, 2, 1, 1, 1, 1, 2, 2
+
+erase_boat1:    STRING 0H, 0H 
+                STRING 8H, 6H
+                STRING 2, 0, 2, 2, 2, 2, 2, 2
+                STRING 2, 2, 0, 2, 2, 2, 2, 2
+                STRING 2, 2, 0, 2, 2, 2, 2, 2
+                STRING 0, 0, 0, 0, 0, 0, 0, 0
+                STRING 2, 0, 0, 0, 0, 0, 0, 2
+                STRING 2, 2, 0, 0, 0, 0, 2, 2
+
+boat2:  STRING 0H, 0H
+        STRING 6H, 5H
+        STRING 2, 1, 2, 2, 2, 2
+        STRING 2, 2, 1, 2, 2, 2
+        STRING 2, 2, 1, 2, 2, 2
+        STRING 1, 1, 1, 1, 1, 1
+        STRING 2, 1, 1, 1, 1, 2
+
+erase_boat2:    STRING 0H, 0H
+                STRING 6H, 5H
+                STRING 2, 0, 2, 2, 2, 2
+                STRING 2, 2, 0, 2, 2, 2
+                STRING 2, 2, 0, 2, 2, 2
+                STRING 0, 0, 0, 0, 0, 0
+                STRING 2, 0, 0, 0, 0, 2
 
 torpedo:    STRING 0H, 0H 
             STRING 1, 3
@@ -132,9 +202,13 @@ exception_table: word clock_0_exception
 submarine_state: word 0
 torpedo_state: word 0
 bullet_state: word 0
+boat1_state: word 0
+boat2_state: word 0
 
 torpedo_clock: word 0
 bullet_clock: word 0
+boat1_clock: word 0
+boat2_clock: word 0
 
 
 ; Comecar o programa
@@ -157,6 +231,14 @@ restart:
     MOV [R0], R1
 
     MOV R0, bullet_state
+    MOV R1, 0
+    MOV [R0], R1
+
+    MOV R0, boat1_state
+    MOV R1, 0
+    MOV [R0], R1
+
+    MOV R1, boat2_state
     MOV R1, 0
     MOV [R0], R1
 
@@ -194,8 +276,14 @@ call clear_screen   ; Limpar o ecra
 
 main_loop:
     CALL submarine_handler
-    CALL torpedo_handler
     CALL bullet_handler
+    CALL torpedo_handler
+    CALL boat1_handler
+    CALL boat2_handler
+
+    CALL detect_bullet_collision
+    CMP R0, 1
+    JEQ stop
 
     CALL get_key                ; gravar tecla lida para last_key
 
@@ -244,6 +332,13 @@ end: JMP end
 clock_0_exception:
     PUSH R0
     PUSH R1
+    
+    MOV R1, 1
+    MOV R0, boat1_clock
+    MOV [R0], R1
+    MOV R0, boat2_clock
+    MOV [R0], R1
+
     POP R1
     POP R0
     RFE
@@ -258,13 +353,28 @@ clock_1_exception:
     MOV [R0], R1
     MOV R0, bullet_clock
     MOV [R0], R1
+
     POP R1
     POP R0
     RFE
 
 
 stop:
-    JMP stop
+    MOV R0, end_screen
+    CALL draw_string
+
+    MOV R2, last_key
+
+    stop_loop:
+        CALL get_key    ;gravar tecla lida para last_key
+
+        MOV R0, [R2]    ; valor de last_key para R0
+
+        MOV R1, 0FH
+        CMP R0, R1
+        JEQ restart     ; o input e a tecla de restart (f)
+
+        JMP stop_loop
 
 
 ; Rotina que apaga tudo no ecra (da esquerda para a direita, para ser diferente)
@@ -311,6 +421,105 @@ random_num_gen:
     MOV R0, [R1]
     POP R1
 
+
+detect_bullet_collision:
+    PUSH R1
+    PUSH R2
+    PUSH R4
+    PUSH R4
+    PUSH R5
+    PUSH R6
+    PUSH R7
+    PUSH R8
+    PUSH R9
+
+    MOV R0, bullet
+    MOVB R1, [R0]   ; x da bullet
+    ADD R0, 1           
+    MOVB R2, [R0]   ; y da bullet
+
+    MOV R0, submarine
+    MOVB R3, [R0]   ; x do submarino
+    ADD R0, 1
+    MOVB R4, [R0]   ; y do submarino
+
+    ADD R0, 1
+    MOVB R5, [R0]   ; tamanho_x do submarino
+    ADD R0, 1
+    MOVB R6, [R0]   ; tamanho_y do submarino
+
+    ADD R0, 1       ; R0 fica no primeiro elemento do submarino
+
+    CMP R1, R3
+    JLT detect_bullet_collision_x_end
+
+    CMP R2, R4
+    JLT detect_bullet_collision_x_end
+
+    MOV R7, R3
+    ADD R7, R5
+    CMP R1, R7
+    JGT detect_bullet_collision_x_end
+
+    MOV R7, R4
+    ADD R7, R6
+    CMP R2, R7
+    JGT detect_bullet_collision_x_end
+
+    MOV R7, 0
+
+    detect_bullet_collision_y:      ; for (y = 0; y < tamanho_y_sub; y++)
+        CMP R7, R6
+        JGE detect_bullet_collision_y_end
+
+        MOV R8, 0
+        detect_bullet_collision_x:  ; for (x = 0; x < tamanho_x_sub; x++)
+            CMP R8, R5
+            JGE detect_bullet_collision_x_end
+
+
+            MOVB R9, [R0]
+            CMP R9, 1
+            JNE detect_bullet_collision_no_collision ; so verificar se o pixel e 1
+
+            MOV R9, R8  ; R9 - x na box do submarine
+            ADD R9, R3  ; R9 - x do pixel no display
+            CMP R9, R1
+            JNE detect_bullet_collision_no_collision
+            
+            MOV R9, R7  ; R9 - y na box do submarine
+            ADD R9, R4  ; R9 - y do pixel no display
+            CMP R9, R2
+            JNE detect_bullet_collision_no_collision
+
+            ; Houve colisao!
+            MOV R0, 1
+            JMP detect_bullet_collision_end
+
+            detect_bullet_collision_no_collision:
+            ADD R0, 1
+
+            ADD R8, 1
+            JMP detect_bullet_collision_x
+        detect_bullet_collision_x_end:
+        
+        ADD R7, 1
+        JMP detect_bullet_collision_y
+    detect_bullet_collision_y_end:
+
+    MOV R0, 0
+
+    detect_bullet_collision_end:
+    POP R9
+    POP R8
+    POP R7
+    POP R6
+    POP R5
+    POP R4
+    POP R3
+    POP R2
+    POP R1
+    RET
 
 submarine_handler:
     PUSH R0
@@ -580,6 +789,182 @@ torpedo_handler:
         RET
 
 
+boat1_handler:
+    PUSH R0
+    PUSH R1
+
+    MOV R1, boat1_state
+    MOV R0, [R1]
+    CMP R0, 0
+    JEQ boat1_handler_0
+    CMP R0, 1
+    JEQ boat1_handler_1
+
+    POP R1
+    POP R0
+    RET
+
+    boat1_handler_0:
+        PUSH R2
+        PUSH R3
+        PUSH R4
+        MOV R1, boat1
+        MOV R2, erase_boat1
+        MOV R3, 5H
+        MOVB [R1], R3
+        MOVB [R2], R3
+
+        MOV R3, 0H
+        ADD R1, 1
+        ADD R2, 1
+        MOVB [R1], R3
+        MOVB [R2], R3
+
+        MOV R1, boat1_state
+        MOV R0, 1
+        MOV [R1], R0
+
+        POP R4
+        POP R3
+        POP R2 
+        POP R1 
+        POP R0
+        RET
+
+
+    boat1_handler_1:
+        PUSH R2
+        PUSH R3
+        MOV R0, boat1_clock
+        MOV R1, [R0]
+        CMP R1, 1
+        JNE boat1_handler_1_end
+        
+        MOV R0, erase_boat1
+        CALL draw_string
+
+        MOV R0, boat1
+        MOV R1, erase_boat1
+
+        MOVB R2, [R0]
+        ADD R2, 1
+
+        MOV R3, 20H
+        CMP R2, R3
+        JGE boat1_handler_1_destroy_boat
+
+        MOVB [R0], R2
+        MOVB [R1], R2
+
+        CALL draw_string
+
+        MOV R0, boat1_clock
+        MOV R1, 0
+        MOV [R0], R1
+
+        JMP boat1_handler_1_end
+
+        boat1_handler_1_destroy_boat:
+        MOV R0, boat1_state
+        MOV R1, 0
+        MOV [R0], R1
+
+        boat1_handler_1_end:
+        POP R3
+        POP R2
+        POP R1
+        POP R0
+        RET
+
+
+boat2_handler:
+    PUSH R0
+    PUSH R1
+
+    MOV R1, boat2_state
+    MOV R0, [R1]
+    CMP R0, 0
+    JEQ boat2_handler_0
+    CMP R0, 1
+    JEQ boat2_handler_1
+
+    POP R1
+    POP R0
+    RET
+
+    boat2_handler_0:
+        PUSH R2
+        PUSH R3
+        PUSH R4
+        MOV R1, boat2
+        MOV R2, erase_boat2
+        MOV R3, 5H
+        MOVB [R1], R3
+        MOVB [R2], R3
+
+        MOV R3, 0H
+        ADD R1, 1
+        ADD R2, 1
+        MOVB [R1], R3
+        MOVB [R2], R3
+
+        MOV R1, boat2_state
+        MOV R0, 1
+        MOV [R1], R0
+
+        POP R4
+        POP R3
+        POP R2 
+        POP R1 
+        POP R0
+        RET
+
+
+    boat2_handler_1:
+        PUSH R2
+        PUSH R3
+        MOV R0, boat2_clock
+        MOV R1, [R0]
+        CMP R1, 1
+        JNE boat2_handler_1_end
+        
+        MOV R0, erase_boat2
+        CALL draw_string
+
+        MOV R0, boat1
+        MOV R1, erase_boat2
+
+        MOVB R2, [R0]
+        ADD R2, 1
+
+        MOV R3, 20H
+        CMP R2, R3
+        JGE boat2_handler_1_destroy_boat
+
+        MOVB [R0], R2
+        MOVB [R1], R2
+
+        CALL draw_string
+
+        MOV R0, boat2_clock
+        MOV R1, 0
+        MOV [R0], R1
+
+        JMP boat2_handler_1_end
+
+        boat2_handler_1_destroy_boat:
+        MOV R0, boat2_state
+        MOV R1, 0
+        MOV [R0], R1
+
+        boat2_handler_1_end:
+        POP R3
+        POP R2
+        POP R1
+        POP R0
+        RET
+
+
 bullet_handler:
     PUSH R0
     PUSH R1
@@ -603,7 +988,7 @@ bullet_handler:
         MOV R2, erase_bullet
         MOV R3, 0H
         MOVB [R1], R3
-        MOVB [R3], R3
+        MOVB [R2], R3
 
         MOV R4, submarine
         ADD R4, 1
@@ -751,6 +1136,16 @@ draw_pixel:
 
     CMP R3, 2
     JEQ draw_end
+
+    CMP R1, 0
+    JLT draw_end
+    CMP R2, 0
+    JLT draw_end
+    MOV R0, 1FH
+    CMP R1, R0
+    JGT draw_end
+    CMP R2, R0
+    JGT draw_end
 
     MOV R0, DISPLAY ; Endereco base
     MOV R6, 8       ; Usado para operacoes
