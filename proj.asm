@@ -688,7 +688,7 @@ torpedo_handler:
         MOV R2, erase_torpedo
         MOV R3, 0 
         MOVB [R1], R3
-        MOVB [R3], R3
+        MOVB [R2], R3
 
         MOV R3, 0H
         ADD R1, 1
@@ -810,7 +810,7 @@ boat1_handler:
         PUSH R4
         MOV R1, boat1
         MOV R2, erase_boat1
-        MOV R3, 5H
+        MOV R3, 0F8H
         MOVB [R1], R3
         MOVB [R2], R3
 
@@ -851,7 +851,13 @@ boat1_handler:
 
         MOV R3, 20H
         CMP R2, R3
-        JGE boat1_handler_1_destroy_boat
+        JLT boat1_handler_1_continue
+
+        MOV R3, 0F0H
+        CMP R2, R3
+        JLT boat1_handler_1_destroy_boat
+
+        boat1_handler_1_continue:
 
         MOVB [R0], R2
         MOVB [R1], R2
@@ -931,7 +937,7 @@ boat2_handler:
         MOV R0, erase_boat2
         CALL draw_string
 
-        MOV R0, boat1
+        MOV R0, boat2
         MOV R1, erase_boat2
 
         MOVB R2, [R0]
