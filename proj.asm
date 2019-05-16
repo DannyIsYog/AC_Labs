@@ -6,6 +6,7 @@
 ;*                                                                             *
 ;* Controlos:                                                                  *
 ;* 0, 1, 2, 4, 6, 8, 9, A - Movimento do Submarino                             *
+;* E - Stop                                                                    *
 ;* F - Restart                                                                 *
 ;*******************************************************************************
 
@@ -53,8 +54,8 @@ onehot_table:   WORD 80H
 ;*******************************************************************************
 
 ; Ecra "Press any key" a mostrar no inicio do jogo
-start_screen:   STRING 0H, 0H
-                STRING 20H, 20H
+start_screen:   STRING 0H, 0H       ; coordenadas
+                STRING 20H, 20H     ; tamanho
                 STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
                 STRING 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0
                 STRING 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0
@@ -138,6 +139,7 @@ erase_submarine:    STRING 0CH, 12H
                     STRING 2, 2, 2, 0, 2, 2
                     STRING 0, 0, 0, 0, 0, 0
 
+; Desenho do barco grande
 boat1:  STRING 0H, 0H
         STRING 8H, 6H
         STRING 2, 1, 2, 2, 2, 2, 2, 2
@@ -147,15 +149,27 @@ boat1:  STRING 0H, 0H
         STRING 2, 1, 1, 1, 1, 1, 1, 2
         STRING 2, 2, 1, 1, 1, 1, 2, 2
 
+; Desenho dos pixeis a apagar do barco grande (alguns nao tem de ser apagados)
 erase_boat1:    STRING 0H, 0H 
                 STRING 8H, 6H
                 STRING 2, 0, 2, 2, 2, 2, 2, 2
                 STRING 2, 2, 0, 2, 2, 2, 2, 2
                 STRING 2, 2, 0, 2, 2, 2, 2, 2
-                STRING 0, 0, 0, 0, 0, 0, 0, 0
-                STRING 2, 0, 0, 0, 0, 0, 0, 2
-                STRING 2, 2, 0, 0, 0, 0, 2, 2
+                STRING 0, 2, 2, 2, 2, 2, 2, 2
+                STRING 2, 0, 2, 2, 2, 2, 2, 2
+                STRING 2, 2, 0, 2, 2, 2, 2, 2
 
+; Desenho dos pixeis a apagar para limpar completamente o barco grande
+fully_erase_boat1:  STRING 0H, 0H
+                    STRING 8H, 6H
+                    STRING 2, 0, 2, 2, 2, 2, 2, 2
+                    STRING 2, 2, 0, 2, 2, 2, 2, 2
+                    STRING 2, 2, 0, 2, 2, 2, 2, 2
+                    STRING 0, 0, 0, 0, 0, 0, 0, 0
+                    STRING 2, 0, 0, 0, 0, 0, 0, 2
+                    STRING 2, 2, 0, 0, 0, 0, 2, 2
+
+; Desenho do barco pequeno
 boat2:  STRING 0H, 0H
         STRING 6H, 5H
         STRING 2, 1, 2, 2, 2, 2
@@ -164,30 +178,44 @@ boat2:  STRING 0H, 0H
         STRING 1, 1, 1, 1, 1, 1
         STRING 2, 1, 1, 1, 1, 2
 
+; Desenho dos pixeis a apagar do barco pequeno (alguns nao tem de ser apagados)
 erase_boat2:    STRING 0H, 0H
                 STRING 6H, 5H
                 STRING 2, 0, 2, 2, 2, 2
                 STRING 2, 2, 0, 2, 2, 2
                 STRING 2, 2, 0, 2, 2, 2
-                STRING 0, 0, 0, 0, 0, 0
-                STRING 2, 0, 0, 0, 0, 2
+                STRING 0, 2, 2, 2, 2, 2
+                STRING 2, 0, 2, 2, 2, 2
 
+; Desenho dos pixeis a apagar para limpar completamente o barco pequeno
+fully_erase_boat2:  STRING 0H, 0H
+                    STRING 6H, 5H
+                    STRING 2, 0, 2, 2, 2, 2
+                    STRING 2, 2, 0, 2, 2, 2
+                    STRING 2, 2, 0, 2, 2, 2
+                    STRING 0, 0, 0, 0, 0, 0
+                    STRING 2, 0, 0, 0, 0, 2
+
+; Desenho do torpedo
 torpedo:    STRING 0H, 0H 
             STRING 1, 3
             STRING 1
             STRING 1
             STRING 1
 
+; Desenho com que apagar o torpedo
 erase_torpedo:  STRING 0H, 0H 
                 STRING 1, 3
                 STRING 0
                 STRING 0
                 STRING 0
 
+; Desenho da bala
 bullet: STRING 0H, 0H
         STRING 1, 1
         STRING 1
 
+; Desenho com que apagar a bala
 erase_bullet: STRING 0H, 0H
               STRING 1, 1
               STRING 0
@@ -195,6 +223,7 @@ erase_bullet: STRING 0H, 0H
 ; Ultima tecla lida
 last_key:   word -1
 
+;Tabela de interrupcoes para os relogios
 exception_table: word clock_0_exception
                  word clock_1_exception
 
@@ -210,6 +239,9 @@ bullet_clock: word 0
 boat1_clock: word 0
 boat2_clock: word 0
 
+; Pontuacao do jogador
+score: word 0
+
 
 ; Comecar o programa
 PLACE 0    
@@ -222,6 +254,7 @@ EI
 restart:
     MOV SP, SP_start ; (Re)iniciar o stack
 
+    ; Inicializar todos os estados a 0
     MOV R0, submarine_state
     MOV R1, 0
     MOV [R0], R1
@@ -238,7 +271,7 @@ restart:
     MOV R1, 0
     MOV [R0], R1
 
-    MOV R1, boat2_state
+    MOV R0, boat2_state
     MOV R1, 0
     MOV [R0], R1
 
@@ -246,6 +279,13 @@ restart:
     MOV R0, last_key
     MOV R1, -1
     MOV [R0], R1 
+
+    ; Reiniviar o score para 0
+    MOV R0, score
+    MOV R1, 0
+    MOV [R0], R1
+    MOV R0, HEX_DISPLAY1
+    MOVB [R0], R1
 
     ; Reiniciar os registos
     MOV R0, 0
@@ -275,15 +315,19 @@ restart:
 call clear_screen   ; Limpar o ecra
 
 main_loop:
+    ; Chamadas as varias funcoes que gerem as varias partes do jogo. 
     CALL submarine_handler
     CALL bullet_handler
     CALL torpedo_handler
     CALL boat1_handler
     CALL boat2_handler
 
+    CALL detect_torpedo_collision
+
     CALL detect_bullet_collision
     CMP R0, 1
     JEQ stop
+
 
     CALL get_key                ; gravar tecla lida para last_key
 
@@ -293,21 +337,20 @@ main_loop:
     CMP R0, -1
     JEQ main_loop   ; nao foi dado input
 
-    ; Submarine
-    MOV R1, 0AH
+    ; Submarino
+    MOV R1, 0AH     ; A ultima tecla de movimento e o A
     CMP R0, R1
-    JGT main_no_movement
+    JGT main_no_movement ; Se nao for uma tecla de movimento, nao alterar o estado do submarino
     MOV R2, submarine_state
     MOV R3, 2
     MOV [R2], R3
     main_no_movement:
 
     ; Torpedo
-    MOV R1, 5
+    MOV R1, 5               ; A tecla para disparar e o 5
     CMP R0, R1
     JNZ main_no_shooting
-
-    MOV R2, torpedo_state
+    MOV R2, torpedo_state   ; Alterar o estado do torpedo apenas se este nao e 1
     MOV R3, [R2]
     CMP R3, 1
     JNZ main_no_shooting
@@ -324,7 +367,7 @@ main_loop:
     CMP R0, R1
     JEQ restart         ; o input e a tecla de restart (f)
 
-    JMP main_loop
+    JMP main_loop       ; proxima iteracao do main_loop
     
 end: JMP end
 
@@ -420,7 +463,152 @@ random_num_gen:
     MOV R1, HEX_DISPLAY2;
     MOV R0, [R1]
     POP R1
+    RET
 
+
+detect_torpedo_collision:
+    PUSH R0
+    PUSH R1
+    PUSH R2
+    PUSH R4
+    PUSH R4
+    PUSH R5
+    PUSH R6
+    PUSH R7
+    
+    MOV R0, torpedo_state
+    MOV R1, [R0]
+    CMP R1, 2
+    JLT detect_torpedo_collision_end
+
+
+    MOV R0, torpedo
+    MOVB R1, [R0]   ; x do torpedo
+    ADD R0, 1           
+    MOVB R2, [R0]   ; y do torpedo
+
+    MOV R3, boat1_state
+    MOV R4, [R3]
+    CMP R4, 0
+    JEQ detect_torpedo_collision_boat2
+
+    MOV R0, boat1
+    MOVB R3, [R0]   ; x do boat1
+    MOV R4, 20H
+    CMP R3, R4
+
+    JLE detect_torpedo_collision_continue1
+    MOV R4, 0FF00H
+    OR R3, R4
+    detect_torpedo_collision_continue1:
+
+    ADD R0, 1           
+    MOVB R4, [R0]   ; y do boat1
+    ADD R0, 1
+    MOVB R5, [R0]   ; tamanho_x do boat1
+    ADD R0, 1
+    MOVB R6, [R0]   ; tamanho_y do boat1
+
+    
+    CMP R1, R3
+    JLT detect_torpedo_collision_boat2
+
+    CMP R2, R4
+    JLT detect_torpedo_collision_boat2
+
+    MOV R7, R3
+    ADD R7, R5      ; coordenadas_x do boat1
+    CMP R1, R7
+    JGT detect_torpedo_collision_boat2
+
+    MOV R7, R4
+    ADD R7, R6      ; coordenadas_y do boat1
+    CMP R2, R7
+    JGT detect_torpedo_collision_boat2
+    
+    MOV R0, boat1_state
+    MOV R1, 0
+    MOV [R0], R1
+    
+    MOV R0, fully_erase_boat1
+    CALL draw_string
+
+    MOV R0, score
+    MOV R1, [R0]
+    ADD R1, 1
+    MOV [R0], R1
+    MOV R0, HEX_DISPLAY1
+    MOVB [R0], R1
+
+    JMP detect_torpedo_collision_end
+
+    detect_torpedo_collision_boat2:
+    MOV R3, boat2_state
+    MOV R4, [R3]
+    CMP R4, 0
+    JEQ detect_torpedo_collision_end
+
+    MOV R0, boat2
+    MOVB R3, [R0]   ; x do boat2
+    MOV R4, 20H
+    CMP R3, R4
+
+    JLE detect_torpedo_collision_continue2
+    MOV R4, 0FF00H
+    OR R3, R4
+    detect_torpedo_collision_continue2:
+
+    ADD R0, 1           
+    MOVB R4, [R0]   ; y do boat2
+    ADD R0, 1
+    MOVB R5, [R0]   ; tamanho_x do boat2
+    ADD R0, 1
+    MOVB R6, [R0]   ; tamanho_y do boat2
+
+    
+    CMP R1, R3
+    JLT detect_torpedo_collision_end
+
+    CMP R2, R4
+    JLT detect_torpedo_collision_end
+
+    MOV R7, R3
+    ADD R7, R5      ; coordenadas_x do boat2
+    CMP R1, R7
+    JGT detect_torpedo_collision_end
+
+    MOV R7, R4
+    ADD R7, R6      ; coordenadas_y do boat2
+    CMP R2, R7
+    JGT detect_torpedo_collision_end
+    
+    MOV R0, boat2_state
+    MOV R1, 0
+    MOV [R0], R1
+    
+    MOV R0, fully_erase_boat2
+    CALL draw_string
+
+    MOV R0, score
+    MOV R1, [R0]
+    ADD R1, 1
+    MOV [R0], R1
+    MOV R0, HEX_DISPLAY1
+    MOVB [R0], R1
+
+    JMP detect_torpedo_collision_end
+
+    detect_torpedo_collision_end:
+    POP R7
+    POP R6
+    POP R5
+    POP R4
+    POP R3
+    POP R2
+    POP R1
+    POP R0
+    RET
+ 
 
 detect_bullet_collision:
     PUSH R1
@@ -686,7 +874,7 @@ torpedo_handler:
         PUSH R3
         MOV R1, torpedo
         MOV R2, erase_torpedo
-        MOV R3, 0 
+        MOV R3, 0
         MOVB [R1], R3
         MOVB [R2], R3
 
@@ -808,22 +996,47 @@ boat1_handler:
         PUSH R2
         PUSH R3
         PUSH R4
+        PUSH R5
+        
+        MOV R1, boat2_state
+        MOV R2, [R1]
+        CMP R2, 1
+        JNE boat1_handler_0_continue
+
+        MOV R1, boat2
+        MOVB R2, [R1]
+        CMP R2, 3
+        JLT boat1_handler_0_end
+        MOV R1, 20H
+        CMP R2, R1
+        JGE boat1_handler_0_end
+
+        boat1_handler_0_continue:
         MOV R1, boat1
         MOV R2, erase_boat1
+        MOV R5, fully_erase_boat1
         MOV R3, 0F8H
         MOVB [R1], R3
         MOVB [R2], R3
+        MOVB [R5], R3
 
-        MOV R3, 0H
+        CALL random_num_gen
+        MOV R4, 04H
+        AND R0, R4
+
         ADD R1, 1
         ADD R2, 1
-        MOVB [R1], R3
-        MOVB [R2], R3
+        ADD R5, 1
+        MOVB [R1], R0
+        MOVB [R2], R0
+        MOVB [R5], R0
 
         MOV R1, boat1_state
         MOV R0, 1
         MOV [R1], R0
 
+        boat1_handler_0_end:
+        POP R5
         POP R4
         POP R3
         POP R2 
@@ -835,6 +1048,8 @@ boat1_handler:
     boat1_handler_1:
         PUSH R2
         PUSH R3
+        PUSH R4
+
         MOV R0, boat1_clock
         MOV R1, [R0]
         CMP R1, 1
@@ -845,6 +1060,7 @@ boat1_handler:
 
         MOV R0, boat1
         MOV R1, erase_boat1
+        MOV R4, fully_erase_boat1
 
         MOVB R2, [R0]
         ADD R2, 1
@@ -861,6 +1077,7 @@ boat1_handler:
 
         MOVB [R0], R2
         MOVB [R1], R2
+        MOVB [R4], R2
 
         CALL draw_string
 
@@ -876,6 +1093,7 @@ boat1_handler:
         MOV [R0], R1
 
         boat1_handler_1_end:
+        POP R4
         POP R3
         POP R2
         POP R1
@@ -902,22 +1120,47 @@ boat2_handler:
         PUSH R2
         PUSH R3
         PUSH R4
+        PUSH R5
+
+        MOV R1, boat1_state
+        MOV R2, [R1]
+        CMP R2, 1
+        JNE boat2_handler_0_continue
+
+        MOV R1, boat1
+        MOVB R2, [R1]
+        CMP R2, 3
+        JLT boat2_handler_0_end
+        MOV R1, 20H
+        CMP R2, R1
+        JGE boat2_handler_0_end
+
+        boat2_handler_0_continue:
         MOV R1, boat2
         MOV R2, erase_boat2
-        MOV R3, 5H
+        MOV R5, fully_erase_boat2
+        MOV R3, 0FAH
         MOVB [R1], R3
         MOVB [R2], R3
+        MOVB [R5], R3
 
-        MOV R3, 0H
+        CALL random_num_gen
+        MOV R4, 04H
+        AND R0, R4
+
         ADD R1, 1
         ADD R2, 1
-        MOVB [R1], R3
-        MOVB [R2], R3
+        ADD R5, 1
+        MOVB [R1], R0
+        MOVB [R2], R0
+        MOVB [R5], R0
 
         MOV R1, boat2_state
         MOV R0, 1
         MOV [R1], R0
 
+        boat2_handler_0_end:
+        POP R5
         POP R4
         POP R3
         POP R2 
@@ -929,6 +1172,8 @@ boat2_handler:
     boat2_handler_1:
         PUSH R2
         PUSH R3
+        PUSH R4
+
         MOV R0, boat2_clock
         MOV R1, [R0]
         CMP R1, 1
@@ -939,16 +1184,24 @@ boat2_handler:
 
         MOV R0, boat2
         MOV R1, erase_boat2
+        MOV R4, fully_erase_boat2
 
         MOVB R2, [R0]
         ADD R2, 1
 
         MOV R3, 20H
         CMP R2, R3
-        JGE boat2_handler_1_destroy_boat
+        JLT boat2_handler_1_continue
+        
+        MOV R3, 0F0H
+        CMP R2, R3
+        JLT boat2_handler_1_destroy_boat
+
+        boat2_handler_1_continue:
 
         MOVB [R0], R2
         MOVB [R1], R2
+        MOVB [R4], R2
 
         CALL draw_string
 
@@ -964,6 +1217,7 @@ boat2_handler:
         MOV [R0], R1
 
         boat2_handler_1_end:
+        POP R4
         POP R3
         POP R2
         POP R1
@@ -1142,6 +1396,10 @@ draw_pixel:
 
     CMP R3, 2
     JEQ draw_end
+
+    MOV R4, 00FFH   ; Aplicar uma mascara para 8 bits
+    AND R1, R4
+    AND R2, R4
 
     CMP R1, 0
     JLT draw_end
