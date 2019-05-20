@@ -89,6 +89,7 @@ start_screen:   STRING 0H, 0H       ; coordenadas
                 STRING 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0
                 STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
+; Ecra "Game over" a mostrar no fim do jogo
 end_screen:     STRING 0H, 0H
                 STRING 20H, 20H
                 STRING 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -150,7 +151,7 @@ boat1:  STRING 0H, 0H
         STRING 2, 2, 1, 1, 1, 1, 2, 2
 
 ; Desenho dos pixeis a apagar do barco grande (alguns nao tem de ser apagados)
-erase_boat1:    STRING 0H, 0H 
+erase_boat1:    STRING 0H, 0H
                 STRING 8H, 6H
                 STRING 2, 0, 2, 2, 2, 2, 2, 2
                 STRING 2, 2, 0, 2, 2, 2, 2, 2
@@ -197,14 +198,14 @@ fully_erase_boat2:  STRING 0H, 0H
                     STRING 2, 0, 0, 0, 0, 2
 
 ; Desenho do torpedo
-torpedo:    STRING 0H, 0H 
+torpedo:    STRING 0H, 0H
             STRING 1, 3
             STRING 1
             STRING 1
             STRING 1
 
 ; Desenho com que apagar o torpedo
-erase_torpedo:  STRING 0H, 0H 
+erase_torpedo:  STRING 0H, 0H
                 STRING 1, 3
                 STRING 0
                 STRING 0
@@ -244,9 +245,9 @@ score: word 0
 
 
 ; Comecar o programa
-PLACE 0    
+PLACE 0
 
-MOV BTE, exception_table
+MOV BTE, exception_table ; Escrever a tabela de interrupecoes
 EI1
 EI0
 EI
@@ -275,12 +276,12 @@ restart:
     MOV R1, 0
     MOV [R0], R1
 
-    ;Reiniciar a last_key para -1
+    ; Reiniciar a last_key para -1
     MOV R0, last_key
     MOV R1, -1
-    MOV [R0], R1 
+    MOV [R0], R1
 
-    ; Reiniviar o score para 0
+    ; Reenviar o score para 0
     MOV R0, score
     MOV R1, 0
     MOV [R0], R1
@@ -311,11 +312,11 @@ restart:
         CMP R1, -1
         JEQ restart_wait    ; Se nenhuma tecla foi carregada, continuar a esperar
 
-; Comecar o jogo: 
+; Comecar o jogo:
 call clear_screen   ; Limpar o ecra
 
 main_loop:
-    ; Chamadas as varias funcoes que gerem as varias partes do jogo. 
+    ; Chamadas as varias funcoes que gerem as varias partes do jogo.
     CALL submarine_handler
     CALL bullet_handler
     CALL torpedo_handler
@@ -325,7 +326,7 @@ main_loop:
     CALL detect_torpedo_collision
 
     CALL detect_bullet_collision
-    CMP R0, 1
+    CMP R0, 1                   ; verifica se a last_key foi E
     JEQ stop
 
 
@@ -343,7 +344,7 @@ main_loop:
     JGT main_no_movement ; Se nao for uma tecla de movimento, nao alterar o estado do submarino
     MOV R2, submarine_state
     MOV R3, 2
-    MOV [R2], R3
+    MOV [R2], R3        ; atualiza o estado do submarino para o estado 2
     main_no_movement:
 
     ; Torpedo
@@ -352,11 +353,11 @@ main_loop:
     JNZ main_no_shooting
     MOV R2, torpedo_state   ; Alterar o estado do torpedo apenas se este nao e 1
     MOV R3, [R2]
-    CMP R3, 1
+    CMP R3, 1               ; verifica se o estado do torpedo nao e o estado 1
     JNZ main_no_shooting
 
     MOV R3, 2
-    MOV [R2], R3
+    MOV [R2], R3            ; muda o estado do torpedo para o estado 2
     main_no_shooting:
 
     MOV R1, 0EH
@@ -368,19 +369,19 @@ main_loop:
     JEQ restart         ; o input e a tecla de restart (f)
 
     JMP main_loop       ; proxima iteracao do main_loop
-    
+
 end: JMP end
 
 
 clock_0_exception:
     PUSH R0
     PUSH R1
-    
+
     MOV R1, 1
     MOV R0, boat1_clock
-    MOV [R0], R1
+    MOV [R0], R1        ; muda o boat1_clock para 1
     MOV R0, boat2_clock
-    MOV [R0], R1
+    MOV [R0], R1        ; muda o boat2_clock para 1
 
     POP R1
     POP R0
@@ -393,9 +394,9 @@ clock_1_exception:
     MOV R1, 1
 
     MOV R0, torpedo_clock
-    MOV [R0], R1
+    MOV [R0], R1        ; muda o torpedo_clock para 1
     MOV R0, bullet_clock
-    MOV [R0], R1
+    MOV [R0], R1        ; muda o bullet_clock para 1
 
     POP R1
     POP R0
@@ -475,7 +476,7 @@ detect_torpedo_collision:
     PUSH R5
     PUSH R6
     PUSH R7
-    
+
     MOV R0, torpedo_state
     MOV R1, [R0]
     CMP R1, 2
@@ -484,7 +485,7 @@ detect_torpedo_collision:
 
     MOV R0, torpedo
     MOVB R1, [R0]   ; x do torpedo
-    ADD R0, 1           
+    ADD R0, 1
     MOVB R2, [R0]   ; y do torpedo
 
     MOV R3, boat1_state
@@ -502,14 +503,14 @@ detect_torpedo_collision:
     OR R3, R4
     detect_torpedo_collision_continue1:
 
-    ADD R0, 1           
+    ADD R0, 1
     MOVB R4, [R0]   ; y do boat1
     ADD R0, 1
     MOVB R5, [R0]   ; tamanho_x do boat1
     ADD R0, 1
     MOVB R6, [R0]   ; tamanho_y do boat1
 
-    
+
     CMP R1, R3
     JLT detect_torpedo_collision_boat2
 
@@ -525,11 +526,11 @@ detect_torpedo_collision:
     ADD R7, R6      ; coordenadas_y do boat1
     CMP R2, R7
     JGT detect_torpedo_collision_boat2
-    
+
     MOV R0, boat1_state
     MOV R1, 0
     MOV [R0], R1
-    
+
     MOV R0, fully_erase_boat1
     CALL draw_string
 
@@ -558,14 +559,14 @@ detect_torpedo_collision:
     OR R3, R4
     detect_torpedo_collision_continue2:
 
-    ADD R0, 1           
+    ADD R0, 1
     MOVB R4, [R0]   ; y do boat2
     ADD R0, 1
     MOVB R5, [R0]   ; tamanho_x do boat2
     ADD R0, 1
     MOVB R6, [R0]   ; tamanho_y do boat2
 
-    
+
     CMP R1, R3
     JLT detect_torpedo_collision_end
 
@@ -581,11 +582,11 @@ detect_torpedo_collision:
     ADD R7, R6      ; coordenadas_y do boat2
     CMP R2, R7
     JGT detect_torpedo_collision_end
-    
+
     MOV R0, boat2_state
     MOV R1, 0
     MOV [R0], R1
-    
+
     MOV R0, fully_erase_boat2
     CALL draw_string
 
@@ -608,7 +609,7 @@ detect_torpedo_collision:
     POP R1
     POP R0
     RET
- 
+
 
 detect_bullet_collision:
     PUSH R1
@@ -623,7 +624,7 @@ detect_bullet_collision:
 
     MOV R0, bullet
     MOVB R1, [R0]   ; x da bullet
-    ADD R0, 1           
+    ADD R0, 1
     MOVB R2, [R0]   ; y da bullet
 
     MOV R0, submarine
@@ -674,7 +675,7 @@ detect_bullet_collision:
             ADD R9, R3  ; R9 - x do pixel no display
             CMP R9, R1
             JNE detect_bullet_collision_no_collision
-            
+
             MOV R9, R7  ; R9 - y na box do submarine
             ADD R9, R4  ; R9 - y do pixel no display
             CMP R9, R2
@@ -690,7 +691,7 @@ detect_bullet_collision:
             ADD R8, 1
             JMP detect_bullet_collision_x
         detect_bullet_collision_x_end:
-        
+
         ADD R7, 1
         JMP detect_bullet_collision_y
     detect_bullet_collision_y_end:
@@ -722,8 +723,8 @@ submarine_handler:
     CMP R0, 2
     JEQ submarine_handler_2
 
-    POP R1 
-    POP R0 
+    POP R1
+    POP R0
     RET
 
     submarine_handler_0:   ; Estado 0: inicializar as variaveis
@@ -747,19 +748,19 @@ submarine_handler:
 
         MOV R0, submarine_state
         MOV R1, 1
-        MOV [R0], R1
+        MOV [R0], R1 ; Passa o estado do submarino para 1
         POP R3
         POP R2
         POP R1
         POP R0
         RET
 
-    submarine_handler_1:
-        POP R1 
-        POP R0 
-        RET 
+    submarine_handler_1:    ; Estado 1: O jogador ao carregou em nenhuma tecla
+        POP R1
+        POP R0
+        RET
 
-    submarine_handler_2:
+    submarine_handler_2:    ; Estado 2: O jogador carregou em alguma tecla
         PUSH R2
         PUSH R3
         PUSH R4
@@ -789,7 +790,7 @@ submarine_handler:
 
         MOVB R7, [R1]
         ADD R7, R5              ; R7 - x final
-        
+
         ADD R1, 1
         MOVB R8, [R1]
         ADD R8, R6              ; R8 - y final
@@ -865,65 +866,28 @@ torpedo_handler:
     CMP R0, 3
     JEQ torpedo_handler_3
 
-    POP R1 
-    POP R0 
+    POP R1
+    POP R0
     RET
 
-    torpedo_handler_0:
+    torpedo_handler_0:  ; Estado 0: Inicializar o torpedo, quando o jogo e (re)iniciado
         PUSH R2
         PUSH R3
         MOV R1, torpedo
         MOV R2, erase_torpedo
         MOV R3, 0
-        MOVB [R1], R3
-        MOVB [R2], R3
+        MOVB [R1], R3 ; coordenada_x do torpedo = 0
+        MOVB [R2], R3 ; coordenada_x do apaga torpedo = 0
 
         MOV R3, 0H
         ADD R1, 1
         ADD R2, 1
-        MOVB [R1], R3
-        MOVB [R2], R3
+        MOVB [R1], R3 ; coordenada_y do torpedo = 0
+        MOVB [R2], R3 ; coordenada_y do apaga torpedo = 0
 
         MOV R1, torpedo_state
         MOV R0, 1
-        MOV [R1], R0
-
-        POP R3
-        POP R2 
-        POP R1 
-        POP R0
-        RET
-
-    torpedo_handler_1:
-        POP R1 
-        POP R0 
-        RET
-
-    torpedo_handler_2:
-        PUSH R2
-        PUSH R3
-
-        MOV R0, submarine
-        MOVB R1, [R0]
-        ADD R0, 1
-        MOVB R2, [R0]
-        ADD R1, 5
-        SUB R2, 1
-        MOV R0, torpedo
-        MOV R3, erase_torpedo
-        
-        MOVB [R0], R1
-        MOVB [R3], R1
-        ADD R0, 1
-        ADD R3, 1
-        MOVB [R0], R2
-        MOVB [R3], R2
-        SUB R0, 1
-        CALL draw_string
-
-        MOV R1, 3
-        MOV R0, torpedo_state
-        MOV [R0], R1
+        MOV [R1], R0 ; muda o estado do torpedo para 1
 
         POP R3
         POP R2
@@ -931,44 +895,81 @@ torpedo_handler:
         POP R0
         RET
 
-    torpedo_handler_3:
+    torpedo_handler_1:  ; Estado 1: O torpedo nao existe
+        POP R1
+        POP R0
+        RET
+
+    torpedo_handler_2:  ; Estado 2: Quando o torpedo e disparado
+        PUSH R2
+        PUSH R3
+
+        MOV R0, submarine ; endereco da coordenada x do submarino
+        MOVB R1, [R0] ; R1: coordenada x do submarino
+        ADD R0, 1
+        MOVB R2, [R0] ; R2: coordenada_y do submarino
+        ADD R1, 5     ; R1: coordenada_x no submarino onde o torpedo vai ser disparado
+        SUB R2, 1     ; R2: coordenada_y no submarine onde o torpedo vai ser disparado
+        MOV R0, torpedo         ; R0: coordenada_x do torpedo
+        MOV R3, erase_torpedo   ; R3: coordenada_y do torpedo
+
+        MOVB [R0], R1 ; muda a coordenada_x do torpedo para onde vai ser disparado
+        MOVB [R3], R1 ; muda a coordenada_x do apaga torpedo para onde vai ser disparado
+        ADD R0, 1     ; endereco da coordenada_y do torpedo
+        ADD R3, 1     ; endereco da coordenada_y do apaga torpedo
+        MOVB [R0], R2 ; muda a coordenada_y do torpedo para onde vai ser disparado
+        MOVB [R3], R2 ; muda a coordenada_y do apaga torpedo para onde vai ser disparado
+        SUB R0, 1     ; R0 : coordenada_x onde o torpedo vai ser desenhado
+        CALL draw_string ; desenha o torpedo
+
+        MOV R1, 3
+        MOV R0, torpedo_state
+        MOV [R0], R1  ; muda o estado do torpedo para o estado 3
+
+        POP R3
+        POP R2
+        POP R1
+        POP R0
+        RET
+
+    torpedo_handler_3:  ; Estado 3: O torpedo esta em movimento, tem de subir
         PUSH R2
         MOV R0, torpedo_clock
         MOV R1, [R0]
-        CMP R1, 1
+        CMP R1, 1             ; So se move se o torpedo_clock estiver a 1
         JNE torpedo_handler_3_end
-        
+
         MOV R0, erase_torpedo
-        CALL draw_string
+        CALL draw_string      ; apaga o torpedo
 
         MOV R0, torpedo
         MOV R1, erase_torpedo
 
-        ADD R0, 1
-        ADD R1, 1
+        ADD R0, 1             ; R0: coordenada_y do torpedo
+        ADD R1, 1             ; R1: coordenada_y do apaga torpedo
         MOVB R2, [R0]
-        SUB R2, 1
+        SUB R2, 1             ; diminui a coordenada_y em 1 unidade (o torpedo sobe)
 
-        CMP R2, 0
+        CMP R2, 0             ; se o torpedo bater no topo do ecra
         JLT torpedo_handler_3_destroy_torpedo
 
-        MOVB [R0], R2
-        MOVB [R1], R2
+        MOVB [R0], R2         ; atualiza as novas coordenadas do torpedo
+        MOVB [R1], R2         ; atualiza as novas coordenadas do apaga torpedo
 
-        SUB R0, 1
+        SUB R0, 1             ; R0: coordenada_x do torpedo
 
-        CALL draw_string
+        CALL draw_string      ; desenha o torpedo com as novas coordenadas
 
         MOV R0, torpedo_clock
         MOV R1, 0
-        MOV [R0], R1
+        MOV [R0], R1          ; muda o torpedo_clock para 0
 
         JMP torpedo_handler_3_end
 
-        torpedo_handler_3_destroy_torpedo:
+        torpedo_handler_3_destroy_torpedo: ; Destroi o torpedo
         MOV R0, torpedo_state
         MOV R1, 1
-        MOV [R0], R1
+        MOV [R0], R1          ; muda o estado do torpedo para 1
 
         torpedo_handler_3_end:
         POP R2
@@ -981,116 +982,116 @@ boat1_handler:
     PUSH R0
     PUSH R1
 
-    MOV R1, boat1_state
+    MOV R1, boat1_state ; vai buscar o estado do barco 1
     MOV R0, [R1]
     CMP R0, 0
-    JEQ boat1_handler_0
+    JEQ boat1_handler_0 ; se o estado do barco 1 for 0
     CMP R0, 1
-    JEQ boat1_handler_1
+    JEQ boat1_handler_1 ; se o estado do barco 1 for 1
 
     POP R1
     POP R0
     RET
 
-    boat1_handler_0:
+    boat1_handler_0:    ; Estado 0: Colocar o barco a esquerda do ecra
         PUSH R2
         PUSH R3
         PUSH R4
         PUSH R5
-        
+
         MOV R1, boat2_state
-        MOV R2, [R1]
-        CMP R2, 1
+        MOV R2, [R1]  ; obtem o estado do barco 2
+        CMP R2, 1     ; verifica se o estado do barco 2 nao e o estado 1
         JNE boat1_handler_0_continue
 
-        MOV R1, boat2
-        MOVB R2, [R1]
-        CMP R2, 3
+        MOV R1, boat2 ; R1: endereco da cordenada_x do barco 2
+        MOVB R2, [R1] ; R2: coordenada_x do barco 2
+        CMP R2, 3     ; verifica se a distancia entre os dois barco e de 3 ou mais pixeis
         JLT boat1_handler_0_end
         MOV R1, 20H
-        CMP R2, R1
+        CMP R2, R1    ; verifica se as coordenada_x e negativa (fora do ecra para a esquerda)
         JGE boat1_handler_0_end
 
         boat1_handler_0_continue:
-        MOV R1, boat1
-        MOV R2, erase_boat1
-        MOV R5, fully_erase_boat1
-        MOV R3, 0F8H
-        MOVB [R1], R3
+        MOV R1, boat1               ; R1: endereco da coordenada_x do barco 1
+        MOV R2, erase_boat1         ; R2: endereco da coordenada_x do apaga barco 1
+        MOV R5, fully_erase_boat1   ; R5: endereco da coordenada_x do apaga tudo barco 1
+        MOV R3, 0F8H                ; 8 pixeis a esquerda do ecra (-8)
+        MOVB [R1], R3               ; atualiza a coordenada_x dos 3 enderecos
         MOVB [R2], R3
         MOVB [R5], R3
 
-        CALL random_num_gen
-        MOV R4, 04H
+        CALL random_num_gen         ; obtem um numero aleatorio
+        MOV R4, 03H                 ; 0011 - mask para o numero aleatorio
         AND R0, R4
 
-        ADD R1, 1
-        ADD R2, 1
-        ADD R5, 1
-        MOVB [R1], R0
+        ADD R1, 1                   ; R1: endereco da coordenada_y do barco 1
+        ADD R2, 1                   ; R2: endereco da coordenada_y do apaga barco 1
+        ADD R5, 1                   ; R5: endereco da coordenada_y do apaga tudo barco 1
+        MOVB [R1], R0               ; atualiza a coordenada_y dos 3 enderecos
         MOVB [R2], R0
         MOVB [R5], R0
 
         MOV R1, boat1_state
         MOV R0, 1
-        MOV [R1], R0
+        MOV [R1], R0                ; atualiza o estado do boat 1 para o estado 1
 
         boat1_handler_0_end:
         POP R5
         POP R4
         POP R3
-        POP R2 
-        POP R1 
+        POP R2
+        POP R1
         POP R0
         RET
 
 
-    boat1_handler_1:
+    boat1_handler_1:    ; Estado 1: Mover o barco para a direita em 1 pixel
         PUSH R2
         PUSH R3
         PUSH R4
 
         MOV R0, boat1_clock
         MOV R1, [R0]
-        CMP R1, 1
+        CMP R1, 1           ; verifica se o boat1_clock esta a 1
         JNE boat1_handler_1_end
-        
+
         MOV R0, erase_boat1
-        CALL draw_string
+        CALL draw_string    ; apaga o barco 1
 
-        MOV R0, boat1
-        MOV R1, erase_boat1
-        MOV R4, fully_erase_boat1
+        MOV R0, boat1               ; R0: endereco da coordenada_x do barco 1
+        MOV R1, erase_boat1         ; R1: endereco da coordenada_x do apaga barco 1
+        MOV R4, fully_erase_boat1   ; R4: endereco da coordenada_x do apaga tudo barco 1
 
-        MOVB R2, [R0]
-        ADD R2, 1
+        MOVB R2, [R0]               ; R2: coordenada_x do barco 1
+        ADD R2, 1                   ; aumenta a coordenada_x do barco 1 em uma unidade
 
         MOV R3, 20H
-        CMP R2, R3
+        CMP R2, R3                  ; verifica se o barco esta dentro do ecra (x =< 32)
         JLT boat1_handler_1_continue
 
         MOV R3, 0F0H
-        CMP R2, R3
+        CMP R2, R3                  ; verifica se barco saiu do ecra (x > 32)
         JLT boat1_handler_1_destroy_boat
 
         boat1_handler_1_continue:
 
-        MOVB [R0], R2
+        MOVB [R0], R2               ; atualiza a coordenada_x dos 3 enderecos
         MOVB [R1], R2
         MOVB [R4], R2
 
-        CALL draw_string
+        CALL draw_string            ; desenha o barco 1 nas novas coordenadas (x+1,y)
 
         MOV R0, boat1_clock
         MOV R1, 0
-        MOV [R0], R1
+        MOV [R0], R1                ; muda o boat1_clock para 0
 
         JMP boat1_handler_1_end
 
-        boat1_handler_1_destroy_boat:
+        boat1_handler_1_destroy_boat: ; destroi o barco porque saiu do ecra
         MOV R0, boat1_state
         MOV R1, 0
-        MOV [R0], R1
+        MOV [R0], R1                  ; muda o estado do barco 1 para o estado 0
 
         boat1_handler_1_end:
         POP R4
@@ -1107,9 +1108,9 @@ boat2_handler:
 
     MOV R1, boat2_state
     MOV R0, [R1]
-    CMP R0, 0
+    CMP R0, 0           ; verifica se o estado do barco 2 e o estado 0
     JEQ boat2_handler_0
-    CMP R0, 1
+    CMP R0, 1           ; verifica se o estado do barco 2 e o estado 1
     JEQ boat2_handler_1
 
     POP R1
@@ -1123,98 +1124,98 @@ boat2_handler:
         PUSH R5
 
         MOV R1, boat1_state
-        MOV R2, [R1]
-        CMP R2, 1
+        MOV R2, [R1]    ; obtem o estado do barco 1
+        CMP R2, 1       ; verifica se o estado do barco 1 nao e o estado 1
         JNE boat2_handler_0_continue
 
-        MOV R1, boat1
-        MOVB R2, [R1]
-        CMP R2, 3
+        MOV R1, boat1   ; R1: endereco da coordenada_x do barco 1
+        MOVB R2, [R1]   ; R2: coordenada_x do barco 1
+        CMP R2, 3       ; verfica se a distancia entre os dois barcos e de 3 ou mais pixeis
         JLT boat2_handler_0_end
         MOV R1, 20H
-        CMP R2, R1
+        CMP R2, R1      ;  verifica se as coordenada_x e negativa (fora do ecra para a esquerda)
         JGE boat2_handler_0_end
 
         boat2_handler_0_continue:
-        MOV R1, boat2
-        MOV R2, erase_boat2
-        MOV R5, fully_erase_boat2
-        MOV R3, 0FAH
-        MOVB [R1], R3
+        MOV R1, boat2               ; R1: endereco da coordenada_x do barco 2
+        MOV R2, erase_boat2         ; R2: endereco da coordenada_x do apaga barco 2
+        MOV R5, fully_erase_boat2   ; R5: endereco da coordenada_x do apaga tudo barco 2
+        MOV R3, 0FAH                ; 8 pixeis a esquerda do ecra (-8)
+        MOVB [R1], R3               ; atualiza a coordenada_x dos 3 enderecos
         MOVB [R2], R3
         MOVB [R5], R3
 
-        CALL random_num_gen
-        MOV R4, 04H
+        CALL random_num_gen         ; obtem um numero aleatorio
+        MOV R4, 04H                 ; 0011 - mask para o numero aleatorio
         AND R0, R4
 
-        ADD R1, 1
-        ADD R2, 1
-        ADD R5, 1
-        MOVB [R1], R0
+        ADD R1, 1                   ; R1: endereco da coordenada_y do barco 2
+        ADD R2, 1                   ; R2: endereco da coordenada_y do apaga barco 2
+        ADD R5, 1                   ; R5: endereco da coordenada_y do apaga tudo barco 2
+        MOVB [R1], R0               ; atualiza a coordenada_y dos 3 enderecos
         MOVB [R2], R0
         MOVB [R5], R0
 
         MOV R1, boat2_state
         MOV R0, 1
-        MOV [R1], R0
+        MOV [R1], R0                ; atualiza o estado do boat 2 para o estado 1
 
         boat2_handler_0_end:
         POP R5
         POP R4
         POP R3
-        POP R2 
-        POP R1 
+        POP R2
+        POP R1
         POP R0
         RET
 
 
-    boat2_handler_1:
+    boat2_handler_1:    ; Estado 1: Mover o barco para a direita em 1 pixel
         PUSH R2
         PUSH R3
         PUSH R4
 
         MOV R0, boat2_clock
         MOV R1, [R0]
-        CMP R1, 1
+        CMP R1, 1           ; verifica se o boat2_clock esta a 1
         JNE boat2_handler_1_end
-        
+
         MOV R0, erase_boat2
-        CALL draw_string
+        CALL draw_string    ; apaga o barco 2
 
-        MOV R0, boat2
-        MOV R1, erase_boat2
-        MOV R4, fully_erase_boat2
+        MOV R0, boat2               ; R0: endereco da coordenada_x do barco 2
+        MOV R1, erase_boat2         ; R1: endereco da coordenada_x do apaga barco 2
+        MOV R4, fully_erase_boat2   ; R4: endereco da coordenada_x do apaga tudo barco 2
 
-        MOVB R2, [R0]
-        ADD R2, 1
+        MOVB R2, [R0]               ; R2: coordenada_x do barco 2
+        ADD R2, 1                   ; aumenta a coordenada_x do barco 2 em uma unidade
 
         MOV R3, 20H
-        CMP R2, R3
+        CMP R2, R3                  ; verifica se o barco esta dentro do ecra (x =< 32)
         JLT boat2_handler_1_continue
-        
+
         MOV R3, 0F0H
-        CMP R2, R3
+        CMP R2, R3                  ; verifica se barco saiu do ecra (x > 32)
         JLT boat2_handler_1_destroy_boat
 
         boat2_handler_1_continue:
 
-        MOVB [R0], R2
+        MOVB [R0], R2               ; atualiza a coordenada_x dos 3 enderecos
         MOVB [R1], R2
         MOVB [R4], R2
 
-        CALL draw_string
+        CALL draw_string            ; desenha o barco 1 nas novas coordenadas (x+1,y)
 
         MOV R0, boat2_clock
         MOV R1, 0
-        MOV [R0], R1
+        MOV [R0], R1                ; muda o boat1_clock para 0
 
         JMP boat2_handler_1_end
 
-        boat2_handler_1_destroy_boat:
+        boat2_handler_1_destroy_boat: ; destroi o barco porque saiu do ecra
         MOV R0, boat2_state
         MOV R1, 0
-        MOV [R0], R1
+        MOV [R0], R1                  ; muda o estado do barco 1 para o estado 0
 
         boat2_handler_1_end:
         POP R4
@@ -1229,84 +1230,84 @@ bullet_handler:
     PUSH R0
     PUSH R1
 
-    MOV R1, bullet_state
+    MOV R1, bullet_state ; vai buscar o estado da bala
     MOV R0, [R1]
     CMP R0, 0
-    JEQ bullet_handler_0
+    JEQ bullet_handler_0 ; se o estado da bala for 0
     CMP R0, 1
-    JEQ bullet_handler_1
+    JEQ bullet_handler_1 ; se o estado da bala for 1
 
     POP R1
     POP R0
     RET
 
-    bullet_handler_0:
+    bullet_handler_0:   ; Estado 0: Quando a bala aparece no ecra
         PUSH R2
         PUSH R3
         PUSH R4
-        MOV R1, bullet
-        MOV R2, erase_bullet
+        MOV R1, bullet          ; R1: endereco da coordenada_x da bala
+        MOV R2, erase_bullet    ; R2: endereco da coordenada_x do apaga bala
         MOV R3, 0H
-        MOVB [R1], R3
-        MOVB [R2], R3
+        MOVB [R1], R3           ; coordenada_x da bala passa para 0
+        MOVB [R2], R3           ; coordenada_x do apaga bala passa para 0
 
         MOV R4, submarine
-        ADD R4, 1
-        MOVB R3, [R4]
-        ADD R3, 1
-        ADD R1, 1
-        ADD R2, 1
-        MOVB [R1], R3
-        MOVB [R2], R3
+        ADD R4, 1               ; R4: endereco da coordenada_y do submarino
+        MOVB R3, [R4]           ; R3: coordenada_y do submarino
+        ADD R3, 1               ; Aumenta em 1 unidade a coordenada_y da bala
+        ADD R1, 1               ; endereco da coordenada_y da bala
+        ADD R2, 1               ; endereco da coordenada_y do apaga bala
+        MOVB [R1], R3           ; atualiza a coordenada_y da bala
+        MOVB [R2], R3           ; atualiza a coordenada_y do apaga bala
 
         MOV R1, bullet_state
         MOV R0, 1
-        MOV [R1], R0
+        MOV [R1], R0            ; atualiza o estado da bala para o estado 1
 
         POP R4
         POP R3
-        POP R2 
-        POP R1 
+        POP R2
+        POP R1
         POP R0
         RET
 
 
-    bullet_handler_1:
+    bullet_handler_1:   ; Estado 1: Movimento da bala
         PUSH R2
         PUSH R3
         MOV R0, bullet_clock
         MOV R1, [R0]
-        CMP R1, 1
+        CMP R1, 1       ; verifica se o bullet_clock nao e 1
         JNE bullet_handler_1_end
-        
+
         MOV R0, erase_bullet
-        CALL draw_string
+        CALL draw_string        ; apaga a bala
 
-        MOV R0, bullet
-        MOV R1, erase_bullet
+        MOV R0, bullet          ; R0: endereco da coordenada_x da bala
+        MOV R1, erase_bullet    ; R1: endereco da coordenada_x do apaga bala
 
-        MOVB R2, [R0]
-        ADD R2, 1
+        MOVB R2, [R0]           ; R2: coordenada_x da bala
+        ADD R2, 1               ; aumenta a coordenada_x da bala em 1 unidade
 
         MOV R3, 20H
-        CMP R2, R3
+        CMP R2, R3              ; verifica se a coordenada_x da bala saiu do ecra (x > 32)
         JGE bullet_handler_1_destroy_bullet
 
-        MOVB [R0], R2
-        MOVB [R1], R2
+        MOVB [R0], R2           ; atualiza a coordenada_x da bala
+        MOVB [R1], R2           ; atualiza a coordenada_x do apaga bala
 
-        CALL draw_string
+        CALL draw_string        ; desenha a bala nas novas coordenadas
 
         MOV R0, bullet_clock
         MOV R1, 0
-        MOV [R0], R1
+        MOV [R0], R1            ; muda o bullet_clock para 0
 
         JMP bullet_handler_1_end
 
-        bullet_handler_1_destroy_bullet:
+        bullet_handler_1_destroy_bullet: ; Destroi a bala
         MOV R0, bullet_state
         MOV R1, 0
-        MOV [R0], R1
+        MOV [R0], R1            ; muda o estado da bala para 0
 
         bullet_handler_1_end:
         POP R3
@@ -1346,12 +1347,12 @@ draw_string:
     draw_string_y:      ; for (i = 0; i < tamanho_y; i++)
         CMP R9, R7
         JGE draw_string_y_end
-        
+
         MOV R8, 0       ; R8: Contador do x atual (j)
         draw_string_x:  ; for (j = 0; j < tamanho_x; j++)
             CMP R8, R6
             JGE draw_string_x_end
-            
+
             MOV R1, R8      ; Copia do x atual
             ADD R1, R4      ; Adicionar o canto para ver o x onde escrever
             MOV R2, R9      ; Copia do y atual
@@ -1501,7 +1502,7 @@ get_key:
         MUL R5, R1          ; linha*4+coluna
         ADD R0, R5
         JMP get_key_end
-    
+
     get_key_return_null:    ; nenhuma tecla carregada, return -1
         MOV R0, -1
     get_key_end:
