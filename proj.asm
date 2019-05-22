@@ -14,7 +14,6 @@ DISPLAY     EQU     8000H       ; Endereco do display
 KEYPININ    EQU     0E000H      ; Endereco de onde ler do keyboard
 KEYPINOUT   EQU     0C000H      ; Endereco de onde escrever para o keyboard
 HEX_DISPLAY1 EQU   0A000H      ; Display hexadecimal 1
-HEX_DISPLAY2 EQU   06000H      ; Display hexadecimal 2
 
 
 PLACE 2000H
@@ -244,6 +243,10 @@ boat2_clock: word 0
 score: word 0
 
 
+; Variavel random
+random: word 0
+
+
 ; Comecar o programa
 PLACE 0
 
@@ -316,6 +319,9 @@ restart:
 call clear_screen   ; Limpar o ecra
 
 main_loop:
+    ; Atualiza o estado de random
+    CALL random_num_gen
+
     ; Chamadas as varias funcoes que gerem as varias partes do jogo.
     CALL submarine_handler
     CALL bullet_handler
@@ -461,8 +467,10 @@ clear_screen:
 
 random_num_gen:
     PUSH R1
-    MOV R1, HEX_DISPLAY2;
+    MOV R1, random;
     MOV R0, [R1]
+    ADD R0, 1
+    MOV [R1], R0
     POP R1
     RET
 
@@ -1006,7 +1014,7 @@ boat1_handler:
 
         MOV R1, boat2 ; R1: endereco da cordenada_x do barco 2
         MOVB R2, [R1] ; R2: coordenada_x do barco 2
-        CMP R2, 3     ; verifica se a distancia entre os dois barco e de 3 ou mais pixeis
+        CMP R2, 5     ; verifica se a distancia entre os dois barco e de 3 ou mais pixeis
         JLT boat1_handler_0_end
         MOV R1, 20H
         CMP R2, R1    ; verifica se as coordenada_x e negativa (fora do ecra para a esquerda)
@@ -1016,12 +1024,17 @@ boat1_handler:
         MOV R1, boat1               ; R1: endereco da coordenada_x do barco 1
         MOV R2, erase_boat1         ; R2: endereco da coordenada_x do apaga barco 1
         MOV R5, fully_erase_boat1   ; R5: endereco da coordenada_x do apaga tudo barco 1
-        MOV R3, 0F8H                ; 8 pixeis a esquerda do ecra (-8)
+        ADD R1, 2                   ; Mover R1 para o tamanho em x do barco
+        MOV R4, [R1]                ; Tamanho em x do barco
+        SUB R1, 2                   ; Mover R1 de volta para coordenada_x do barco 1
+        MOV R3, 0FFH
+        SUB R3, R4                  ; Iniciar o barco a esquerda do ecra
         MOVB [R1], R3               ; atualiza a coordenada_x dos 3 enderecos
         MOVB [R2], R3
         MOVB [R5], R3
 
-        CALL random_num_gen         ; obtem um numero aleatorio
+        MOV R4, random              ; obtem um numero aleatorio
+        MOV R0, [R4]
         MOV R4, 03H                 ; 0011 - mask para o numero aleatorio
         AND R0, R4
 
@@ -1130,7 +1143,7 @@ boat2_handler:
 
         MOV R1, boat1   ; R1: endereco da coordenada_x do barco 1
         MOVB R2, [R1]   ; R2: coordenada_x do barco 1
-        CMP R2, 3       ; verfica se a distancia entre os dois barcos e de 3 ou mais pixeis
+        CMP R2, 5       ; verfica se a distancia entre os dois barcos e de 3 ou mais pixeis
         JLT boat2_handler_0_end
         MOV R1, 20H
         CMP R2, R1      ;  verifica se as coordenada_x e negativa (fora do ecra para a esquerda)
@@ -1140,13 +1153,18 @@ boat2_handler:
         MOV R1, boat2               ; R1: endereco da coordenada_x do barco 2
         MOV R2, erase_boat2         ; R2: endereco da coordenada_x do apaga barco 2
         MOV R5, fully_erase_boat2   ; R5: endereco da coordenada_x do apaga tudo barco 2
-        MOV R3, 0FAH                ; 8 pixeis a esquerda do ecra (-8)
+        ADD R1, 2                   ; Mover R1 para o tamanho em x do barco
+        MOV R4, [R1]                ; Tamanho em x do barco
+        SUB R1, 2                   ; Mover R1 de volta para coordenada_x do barco
+        MOV R3, 0FFH
+        SUB R3, R4                  ; Iniciar o barco a esquerda do ecra
         MOVB [R1], R3               ; atualiza a coordenada_x dos 3 enderecos
         MOVB [R2], R3
         MOVB [R5], R3
 
-        CALL random_num_gen         ; obtem um numero aleatorio
-        MOV R4, 04H                 ; 0011 - mask para o numero aleatorio
+        MOV R4, random              ; obtem um numero aleatorio
+        MOV R0, [R4]
+        MOV R4, 03H                 ; 0011 - mask para o numero aleatorio
         AND R0, R4
 
         ADD R1, 1                   ; R1: endereco da coordenada_y do barco 2
